@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ポータルカード編集 - 管理パネル</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/__/firebase/8.10.1/firebase-app.js"></script>
+    <script src="/__/firebase/8.10.1/firebase-firestore.js"></script>
+    <script src="/__/firebase/8.10.1/firebase-auth.js"></script>
+    <script src="/__/firebase/init.js"></script>
+    <style>
+        body { background-color: #0f172a; color: white; font-family: 'Inter', sans-serif; }
+        .hidden-content { display: none; }
+        .cosmic-card-preview {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(71, 85, 105, 0.4);
+            backdrop-filter: blur(12px);
+            border-radius: 1rem;
+            transition: all 0.3s ease;
+        }
+        .plasma-sphere {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+    <!-- Auth Guard -->
+    <div id="auth-guard" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950">
+        <div class="text-center p-8 bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 shadow-2xl max-w-sm w-full mx-4">
+            <h2 class="text-xl font-bold mb-4">認証が必要です</h2>
+            <p class="text-slate-400 text-sm mb-6">管理用パスコードを入力してください。</p>
+            <div class="mb-4">
+                <input type="password" id="pass-input" placeholder="••••••••" class="w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500/50 text-white placeholder-slate-500 transition-all font-mono">
+            </div>
+            <button id="auth-btn" class="w-full py-3 bg-cyan-600 hover:bg-cyan-500 rounded-lg font-medium transition-colors shadow-lg shadow-cyan-900/20">
+                認証する
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="admin-content" class="hidden-content flex-1 flex flex-col p-6 max-w-6xl mx-auto w-full">
+        <header class="flex justify-between items-center mb-8 pb-4 border-b border-slate-800">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight">ポータルカード編集</h1>
+                <p class="text-slate-400 text-sm">トップページのカード情報を編集・追加・削除します。表示位置(1〜8)を指定してトップページに表示します。</p>
+            </div>
+            <div class="flex gap-3">
+                <button id="add-card-btn" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg font-bold transition-all shadow-lg shadow-blue-900/20 text-sm">新規カード追加</button>
+                <button id="save-all-btn" class="bg-emerald-600 hover:bg-emerald-500 px-6 py-2 rounded-lg font-bold transition-all shadow-lg shadow-emerald-900/20 text-sm">一括保存</button>
+                <a href="index.html" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-lg text-sm transition-colors flex items-center">ダッシュボードへ戻る</a>
+            </div>
+        </header>
+
+        <div id="cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <!-- Cards will be injected here -->
+        </div>
+
+        <!-- Edit Form (Modal-like or persistent area) -->
+        <div id="edit-area" class="hidden bg-slate-800/50 backdrop-blur-xl border border-slate-700 rounded-2xl p-6 shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold flex items-center gap-2">
+                    <span id="editing-card-index" class="bg-cyan-600/20 text-cyan-400 w-8 h-8 rounded-full flex items-center justify-center text-sm font-mono border border-cyan-500/30"></span>
+                    カードの編集
+                </h2>
+                <button id="delete-card-btn" class="px-4 py-2 rounded-lg bg-rose-600/20 text-rose-400 border border-rose-500/30 hover:bg-rose-600 hover:text-white transition-all text-sm font-medium">このカードを削除</button>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">表示位置 (トップページ)</label>
+                        <select id="edit-position" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:ring-2 focus:ring-cyan-500/50 outline-none transition-all">
+                            <option value="">非表示 (None)</option>
+                            <option value="1">位置 1</option>
+                            <option value="2">位置 2</option>
+                            <option value="3">位置 3</option>
+                            <option value="4">位置 4</option>
+                            <option value="5">位置 5</option>
+                            <option value="6">位置 6</option>
+                            <option value="7">位置 7</option>
+                            <option value="8">位置 8</option>
+                        </select>
+                        <p class="text-[10px] text-slate-500 mt-1">※1〜8を選択するとトップページの該当箇所に表示されます。</p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">タイトル</label>
+                        <input type="text" id="edit-title" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:ring-2 focus:ring-cyan-500/50 outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">リンクURL</label>
+                        <input type="text" id="edit-url" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:ring-2 focus:ring-cyan-500/50 outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">カラーテーマ</label>
+                        <select id="edit-color" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:ring-2 focus:ring-cyan-500/50 outline-none transition-all">
+                            <option value="cyan">Cyan (シアン)</option>
+                            <option value="emerald">Emerald (エメラルド)</option>
+                            <option value="yellow">Yellow (イエロー)</option>
+                            <option value="fuchsia">Fuchsia (フクシャ)</option>
+                            <option value="rose">Rose (ローズ)</option>
+                            <option value="orange">Orange (オレンジ)</option>
+                            <option value="blue">Blue (ブルー)</option>
+                            <option value="indigo">Indigo (インディゴ)</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">SVGコード (アイコン)</label>
+                    <textarea id="edit-svg" rows="12" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white font-mono text-xs focus:ring-2 focus:ring-cyan-500/50 outline-none transition-all resize-none"></textarea>
+                    <p class="text-[10px] text-slate-500 mt-2">※Lucideアイコンや自作SVGの&lt;svg&gt;タグをそのまま貼り付けてください。text-whiteクラスが自動付与されます。</p>
+                </div>
+            </div>
+            <div class="mt-8 flex justify-end gap-3">
+                <button id="cancel-edit" class="px-6 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 transition-all text-sm">キャンセル</button>
+                <button id="apply-edit" class="px-6 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 font-bold shadow-lg shadow-cyan-900/40 transition-all text-sm">反映（プレビューへ）</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const hashPasscode = '3056d5cdd96bfee8d8ab6d5f554f5607a1bb32963d8e64b8f28d1b0f73d2de72'; // 9278293
+        const storageKey = 'admin_auth_token';
+        const db = firebase.firestore();
+        const COLLECTION_NAME = 'portalCards';
+        // Firestore write batch limit is 500 ops; keep a safety margin.
+        const MAX_BATCH_OPS = 450;
+
+        // Initial Data (Matching public/index.html)
+        let cards = [
+            { id: 'card1', title: 'えひめ連携企業紹介', url: '#', colorTheme: 'cyan', svgCode: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-handshake"><path d="m11 17 2 2a1 1 0 1 0 3-3"></path><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"></path><path d="m21 3 1 11h-2"></path><path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"></path><path d="M3 4h8"></path></svg>', position: 1 },
+            { id: 'card2', title: '松山ミュージアムストリート', url: '/museum-street/', colorTheme: 'emerald', svgCode: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg>', position: 2 },
+            { id: 'card3', title: '愛媛大学ミュージアム', url: '#', colorTheme: 'yellow', svgCode: '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M 10,18 Q 30,38 52,38"></path><path d="M 10,38 Q 28,56 48,56"></path><path d="M 52,49 L 57,41 L 62,48 L 71,32 L 78,40 L 88,27"></path><path d="M 10,58 C 30,84 68,84 88,56"></path></svg>', position: 3 },
+            { id: 'card4', title: 'イマジン・デッキ', url: '#', colorTheme: 'fuchsia', svgCode: '<svg viewBox="5 5 90 90" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polygon points="15,55 50,75 85,55 50,35" stroke-width="5"></polygon><line x1="50" y1="55" x2="82" y2="23" stroke-width="7"></line><circle cx="50" cy="55" r="7" fill="currentColor" stroke-width="0"></circle><polygon points="86,18 63,18 86,41" fill="currentColor" stroke-width="1"></polygon></svg>', position: 4 },
+            { id: 'card5', title: '愛媛大学の学生生活サポート', url: '#', colorTheme: 'rose', svgCode: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart-handshake"><path d="M19.414 14.414C21 12.828 22 11.5 22 9.5a5.5 5.5 0 0 0-9.591-3.676.6.6 0 0 1-.818.001A5.5 5.5 0 0 0 2 9.5c0 2.3 1.5 4 3 5.5l5.535 5.362a2 2 0 0 0 2.879.052 2.12 2.12 0 0 0-.004-3 2.124 2.124 0 1 0 3-3 2.124 2.124 0 0 0 3.004 0 2 2 0 0 0 0-2.828l-1.881-1.882a2.41 2.41 0 0 0-3.409 0l-1.71 1.71a2 2 0 0 1-2.828 0 2 2 0 0 1 0-2.828l2.823-2.762"></path></svg>', position: 5 },
+            { id: 'card6', title: '大学生協サイト', url: '#', colorTheme: 'orange', svgCode: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart"><circle cx="8" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path></svg>', position: 6 },
+            { id: 'card7', title: '愛媛大学修学支援システム', url: '#', colorTheme: 'blue', svgCode: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-graduation-cap"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"></path><path d="M22 10v6"></path><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"></path></svg>', position: 7 },
+            { id: 'card8', title: '問い合わせ先', url: '#', colorTheme: 'indigo', svgCode: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"></path><rect x="2" y="4" width="20" height="16" rx="2"></rect></svg>', position: 8 },
+        ];
+
+        let cardsToDelete = [];
+        let currentEditingIndex = -1;
+
+        // Color theme mapping for TailWind
+        const colorClasses = {
+            cyan: { from: 'from-cyan-500', to: 'from-cyan-700', text: 'text-cyan-400' },
+            emerald: { from: 'from-emerald-500', to: 'from-emerald-800', text: 'text-emerald-400' },
+            yellow: { from: 'from-yellow-400', to: 'from-yellow-600', text: 'text-yellow-400' },
+            fuchsia: { from: 'from-fuchsia-500', to: 'from-purple-700', text: 'text-fuchsia-400' },
+            rose: { from: 'from-rose-500', to: 'from-rose-800', text: 'text-rose-500' },
+            orange: { from: 'from-orange-500', to: 'from-orange-700', text: 'text-orange-500' },
+            blue: { from: 'from-blue-500', to: 'from-blue-800', text: 'text-blue-500' },
+            indigo: { from: 'from-indigo-500', to: 'from-indigo-800', text: 'text-indigo-400' }
+        };
+
+        // --- Auth Section ---
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        async function authenticate() {
+            const input = document.getElementById('pass-input');
+            const password = input.value;
+            if (!password) return;
+            const hashedInput = await sha256(password);
+            if (hashedInput === hashPasscode) {
+                localStorage.setItem(storageKey, hashedInput);
+                showContent();
+            } else {
+                alert('パスコードが正しくありません。');
+                input.value = '';
+                input.focus();
+            }
+        }
+
+        function showContent() {
+            document.getElementById('auth-guard').classList.add('hidden');
+            document.getElementById('admin-content').classList.remove('hidden-content');
+            fetchData();
+        }
+
+        // --- Data Section ---
+        async function fetchData() {
+            try {
+                // Ensure auth state is handled before fetching.
+                // Note: Since this is read-only initially for the list, it might succeed depending on rules.
+                // The rules allow read, write: if true, so no auth check needed for DB.
+                const snapshot = await db.collection(COLLECTION_NAME).get();
+                if (!snapshot.empty) {
+                    cards = snapshot.docs.map(doc => {
+                        const data = doc.data();
+
+                        // Fallback position for backwards compatibility
+                        // Note: position === null means it was explicitly set to hidden, so only fallback if undefined.
+                        let pos = data.position;
+                        if (pos === undefined) {
+                            const match = doc.id.match(/^card(\d+)$/);
+                            if (match) {
+                                pos = parseInt(match[1], 10);
+                            }
+                        }
+
+                        return { ...data, id: doc.id, position: pos };
+                    });
+                }
+
+                // Sort cards: those with a position first (1 to 8), then others
+                cards.sort((a, b) => {
+                    const posA = a.position || 999;
+                    const posB = b.position || 999;
+                    return posA - posB;
+                });
+
+                renderGrid();
+            } catch (err) {
+                console.warn("[DEBUG] Fetch failed, using local defaults", err);
+                renderGrid();
+            }
+        }
+
+        function renderGrid() {
+            const grid = document.getElementById('cards-grid');
+            grid.innerHTML = '';
+            cards.forEach((card, idx) => {
+                const color = colorClasses[card.colorTheme] || colorClasses.cyan;
+                const cardEl = document.createElement('div');
+                cardEl.className = 'cosmic-card-preview p-4 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-slate-800/80 group border-t-4 border-t-transparent relative';
+
+                let positionBadge = '';
+                if (card.position && card.position >= 1 && card.position <= 8) {
+                    positionBadge = `<div class="absolute top-2 right-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-1 rounded-full">位置 ${card.position}</div>`;
+                } else {
+                    positionBadge = `<div class="absolute top-2 right-2 bg-slate-700 text-slate-300 text-[10px] font-bold px-2 py-1 rounded-full">非表示</div>`;
+                }
+
+                cardEl.innerHTML = `
+                    ${positionBadge}
+                    <div class="plasma-sphere bg-gradient-to-br ${color.from} ${color.to} mb-3 group-hover:scale-110 transition-transform">
+                        <div class="w-6 h-6 flex items-center justify-center text-white">
+                            ${card.svgCode}
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold text-slate-100 mb-1 leading-tight">${card.title || '（名称未設定）'}</span>
+                    <span class="text-[10px] text-slate-500 font-mono">${card.colorTheme}</span>
+                `;
+                cardEl.onclick = () => openEditForm(idx);
+                grid.appendChild(cardEl);
+            });
+        }
+
+        function openEditForm(idx) {
+            currentEditingIndex = idx;
+            const card = cards[idx];
+            document.getElementById('editing-card-index').textContent = idx + 1;
+            document.getElementById('edit-title').value = card.title || '';
+            document.getElementById('edit-url').value = card.url || '';
+            document.getElementById('edit-color').value = card.colorTheme || 'cyan';
+            document.getElementById('edit-svg').value = card.svgCode || '';
+            document.getElementById('edit-position').value = card.position || '';
+            
+            document.getElementById('edit-area').classList.remove('hidden');
+            document.getElementById('edit-area').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        document.getElementById('add-card-btn').onclick = () => {
+            const newId = 'item_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+            cards.push({
+                id: newId,
+                title: '新規カード',
+                url: '#',
+                colorTheme: 'cyan',
+                svgCode: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+                position: null
+            });
+            renderGrid();
+            openEditForm(cards.length - 1);
+        };
+
+        document.getElementById('delete-card-btn').onclick = () => {
+            if (currentEditingIndex === -1) return;
+            if (confirm("このカードを削除してもよろしいですか？（一括保存時に完全に削除されます）")) {
+                const cardToDelete = cards[currentEditingIndex];
+                if (cardToDelete && cardToDelete.id) {
+                    cardsToDelete.push(cardToDelete.id);
+                }
+                cards.splice(currentEditingIndex, 1);
+                currentEditingIndex = -1;
+                document.getElementById('edit-area').classList.add('hidden');
+                renderGrid();
+            }
+        };
+
+        document.getElementById('apply-edit').onclick = () => {
+            if (currentEditingIndex === -1) return;
+            
+            const newPositionStr = document.getElementById('edit-position').value;
+            const newPosition = newPositionStr ? parseInt(newPositionStr, 10) : null;
+
+            // Check for collision
+            if (newPosition !== null) {
+                const conflictingIndex = cards.findIndex((c, idx) => c.position === newPosition && idx !== currentEditingIndex);
+                if (conflictingIndex !== -1) {
+                    const conflictingCard = cards[conflictingIndex];
+                    const proceed = confirm(`位置 ${newPosition} には既に「${conflictingCard.title}」が設定されています。\n上書きして、「${conflictingCard.title}」を非表示にしてもよろしいですか？`);
+
+                    if (!proceed) {
+                        return; // Cancel apply
+                    }
+
+                    // Overwrite logic: unset conflicting card's position
+                    cards[conflictingIndex].position = null;
+                }
+            }
+
+            cards[currentEditingIndex] = {
+                id: cards[currentEditingIndex].id, // Preserve ID
+                title: document.getElementById('edit-title').value,
+                url: document.getElementById('edit-url').value,
+                colorTheme: document.getElementById('edit-color').value,
+                svgCode: document.getElementById('edit-svg').value,
+                position: newPosition
+            };
+            
+            // Re-sort and render
+            cards.sort((a, b) => {
+                const posA = a.position || 999;
+                const posB = b.position || 999;
+                return posA - posB;
+            });
+
+            currentEditingIndex = -1;
+            renderGrid();
+            document.getElementById('edit-area').classList.add('hidden');
+            console.log("Applied locally. Use 'Save All' to push to Firestore.");
+        };
+
+        document.getElementById('cancel-edit').onclick = () => {
+            currentEditingIndex = -1;
+            document.getElementById('edit-area').classList.add('hidden');
+        };
+
+        document.getElementById('save-all-btn').onclick = async () => {
+            const btn = document.getElementById('save-all-btn');
+            btn.textContent = '保存中...';
+            btn.disabled = true;
+
+            try {
+                // To bypass firestore rules requiring authentication in admin script,
+                // we assume anonymous login might be needed if rules change, but current rules allow if true for some,
+                // but let's be safe and try to signInAnonymously if needed. The prompt mentioned signInAnonymously is used.
+                if (!firebase.auth().currentUser) {
+                    try {
+                        await firebase.auth().signInAnonymously();
+                    } catch(authErr) {
+                        console.warn("[DEBUG] Anonymous sign in failed, might not be required", authErr);
+                    }
+                }
+
+                const writeOperations = [];
+
+                cards.forEach(card => {
+                    const docRef = db.collection(COLLECTION_NAME).doc(card.id);
+                    writeOperations.push({ type: 'set', docRef, data: card });
+                });
+
+                cardsToDelete.forEach(id => {
+                    const docRef = db.collection(COLLECTION_NAME).doc(id);
+                    writeOperations.push({ type: 'delete', docRef });
+                });
+
+                for (let i = 0; i < writeOperations.length; i += MAX_BATCH_OPS) {
+                    const batch = db.batch();
+                    const chunk = writeOperations.slice(i, i + MAX_BATCH_OPS);
+
+                    chunk.forEach((operation) => {
+                        if (operation.type === 'set') {
+                            batch.set(operation.docRef, operation.data);
+                        } else if (operation.type === 'delete') {
+                            batch.delete(operation.docRef);
+                        }
+                    });
+
+                    await batch.commit();
+                }
+
+                cardsToDelete = []; // Reset deleted queue
+                alert('すべてのカード情報をFirestoreに保存しました！');
+            } catch (err) {
+                console.warn("[DEBUG] Save failed", err);
+                alert('保存に失敗しました。コンソールを確認してください。');
+            } finally {
+                btn.textContent = '一括保存';
+                btn.disabled = false;
+            }
+        };
+
+        // --- Init ---
+        document.getElementById('auth-btn').onclick = authenticate;
+        document.getElementById('pass-input').onkeydown = (e) => {
+            if (e.key === 'Enter') authenticate();
+        };
+
+        window.onload = async () => {
+            const storedToken = localStorage.getItem(storageKey);
+            if (storedToken === hashPasscode) {
+                showContent();
+            } else {
+                document.getElementById('pass-input').focus();
+            }
+        };
+    </script>
+</body>
+</html>

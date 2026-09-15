@@ -1,0 +1,31 @@
+{
+  "name": "愛媛大学ミュージアム イマジン・デッキ",
+  "short_name": "イマジン・デッキ",
+  "id": "/imaginedeck/",
+  "start_url": "/imaginedeck/",
+  "scope": "/imaginedeck/",
+  "display": "fullscreen",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "description": "愛媛大学ミュージアムのイマジン・デッキ サイネージ表示です。",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+name: Site CI
+
+on:
+  pull_request:
+    branches:
+      - museum-portal
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static-integrity:
+    name: Static Integrity
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run static integrity contract tests
+        run: node --test test-static-integrity.cjs
+
+  browser-smoke:
+    name: Browser Smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Start static web server
+        run: |
+          python3 -m http.server 3000 --directory public &
+          echo "SERVER_PID=$!" >> $GITHUB_ENV
+          sleep 2
+
+      - name: Run browser smoke tests
+        run: node test-browser-smoke.cjs
+
+      - name: Stop static web server
+        if: always()
+        run: |
+          if [ -n "$SERVER_PID" ]; then
+            kill "$SERVER_PID" 2>/dev/null || true
+          fi
+
+      - name: Upload diagnostic screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostic-screenshots
+          path: diagnostic-screenshots/
+          retention-days: 7
+          if-no-files-found: ignore

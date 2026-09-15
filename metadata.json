@@ -1,0 +1,6 @@
+{
+  "name": "ミュージアム・ポータル",
+  "description": "愛媛大学ミュージアム ポータルサイト - 果てしなき知の探求、その入り口。企画展や松山ミュージアムストリートのイベント情報を発信。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

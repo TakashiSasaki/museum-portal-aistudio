@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>デジタルサイネージ プレビュー</title>
+    <link rel="stylesheet" href="index.css">
+
+    <style>
+        #event-reminder-dialog {
+            width: min(84vw, 42rem);
+            max-height: min(82dvh, 48rem);
+            margin: auto;
+            padding: 0;
+            border: 0;
+            border-radius: 1.25rem;
+            background: transparent;
+            color: #231b2d;
+            overflow: visible;
+        }
+
+        #event-reminder-dialog::backdrop {
+            background: rgba(8, 4, 12, 0.72);
+            backdrop-filter: blur(5px);
+        }
+
+        .event-reminder-card {
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-height: min(82dvh, 48rem);
+            padding: clamp(1.25rem, 4vw, 2.25rem);
+            border: 1px solid rgba(130, 34, 128, 0.35);
+            border-radius: 1.25rem;
+            background:
+                radial-gradient(circle at top right, rgba(255, 225, 250, 0.95), transparent 42%),
+                linear-gradient(145deg, #ffffff 0%, #f8eff8 100%);
+            box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.45);
+            overflow: hidden;
+        }
+
+        .event-reminder-kicker {
+            margin: 0;
+            color: #822280;
+            font-size: clamp(0.9rem, 2.8vw, 1.15rem);
+            font-weight: 800;
+            letter-spacing: 0.08em;
+        }
+
+        .event-reminder-heading {
+            margin: 0;
+            color: #4f174e;
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            line-height: 1.25;
+            overflow-wrap: anywhere;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+            overflow: hidden;
+        }
+
+        .event-reminder-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .event-reminder-badge {
+            display: inline-flex;
+            align-items: center;
+            min-height: 1.75rem;
+            padding: 0.2rem 0.7rem;
+            border-radius: 999px;
+            background: #822280;
+            color: #ffffff;
+            font-size: clamp(0.78rem, 2.4vw, 1rem);
+            font-weight: 700;
+        }
+
+        .event-reminder-badge.is-exclusive {
+            background: #7a1d1d;
+        }
+
+        .event-reminder-badge[hidden],
+        .event-reminder-organizer[hidden],
+        .event-reminder-excerpt[hidden] {
+            display: none;
+        }
+
+        .event-reminder-datetime {
+            margin: 0;
+            color: #241529;
+            font-size: clamp(1.05rem, 3.6vw, 1.5rem);
+            font-weight: 700;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            overflow: hidden;
+        }
+
+        .event-reminder-organizer,
+        .event-reminder-excerpt {
+            margin: 0;
+            color: #4a3e4e;
+            font-size: clamp(0.95rem, 3vw, 1.2rem);
+            line-height: 1.65;
+            white-space: normal;
+            overflow-wrap: anywhere;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .event-reminder-organizer {
+            -webkit-line-clamp: 2;
+        }
+
+        .event-reminder-excerpt {
+            -webkit-line-clamp: 4;
+        }
+
+        .event-reminder-organizer::before {
+            content: "主催：";
+            font-weight: 700;
+        }
+
+        .event-reminder-close {
+            align-self: stretch;
+            flex-shrink: 0;
+            min-height: 3rem;
+            margin-top: 0.25rem;
+            border: 0;
+            border-radius: 0.8rem;
+            background: #822280;
+            color: #ffffff;
+            font: inherit;
+            font-size: clamp(1rem, 3.4vw, 1.25rem);
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 0.3rem 0.8rem rgba(85, 20, 84, 0.28);
+        }
+
+        .event-reminder-close:focus-visible {
+            outline: 3px solid #ffcfef;
+            outline-offset: 3px;
+        }
+
+        @media (max-height: 520px) and (orientation: landscape) {
+            #event-reminder-dialog {
+                width: min(90vw, 48rem);
+                max-height: 90dvh;
+            }
+
+            .event-reminder-card {
+                gap: 0.6rem;
+                max-height: 90dvh;
+                padding: 1rem 1.25rem;
+            }
+
+            .event-reminder-heading {
+                font-size: clamp(1.2rem, 4vw, 1.8rem);
+                -webkit-line-clamp: 2;
+            }
+
+            .event-reminder-organizer,
+            .event-reminder-excerpt {
+                line-height: 1.4;
+            }
+
+            .event-reminder-organizer {
+                -webkit-line-clamp: 1;
+            }
+
+            .event-reminder-excerpt {
+                -webkit-line-clamp: 2;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="screen-wrapper">
+
+        <!-- タイトル部分 -->
+        <div class="title-frame">
+            <h1>愛媛大学ミュージアム イマジン・デッキ</h1>
+        </div>
+
+        <!-- 上フレーム：時刻・ストップウォッチ・タイマー表示 -->
+        <div class="frame top-frame">
+            <!-- モード切り替えナビゲーション -->
+            <div class="top-nav">
+                <button class="nav-btn active" data-target="mode-clock">時計</button>
+                <button class="nav-btn" data-target="mode-stopwatch">ストップウォッチ</button>
+                <button class="nav-btn" data-target="mode-timer">タイマー</button>
+            </div>
+
+            <!-- 時計モード -->
+            <div id="mode-clock" class="top-mode-content active">
+                <div id="clock-date" class="clock-date"></div>
+                <div class="time-display-group">
+                    <span id="clock-h" class="time-num">00</span><span class="time-unit">時</span>
+                    <span id="clock-m" class="time-num">00</span><span class="time-unit">分</span>
+                    <span id="clock-s" class="time-num">00</span><span class="time-unit">秒</span>
+                </div>
+                <div id="upcoming-event-alert" class="upcoming-event-alert" style="display: none;"></div>
+            </div>
+
+            <!-- ストップウォッチモード -->
+            <div id="mode-stopwatch" class="top-mode-content">
+                <div id="stopwatch-display" class="time-display-group">
+                    <span id="sw-h" class="time-num">00</span><span class="time-unit">時</span>
+                    <span id="sw-m" class="time-num">00</span><span class="time-unit">分</span>
+                    <span id="sw-s" class="time-num">00</span><span class="time-unit">秒</span>
+                    <span id="sw-ms-disp" class="sw-ms">.00</span>
+                </div>
+                <div class="control-btns">
+                    <button id="sw-start-stop">スタート</button>
+                    <button id="sw-reset">リセット</button>
+                </div>
+            </div>
+
+            <!-- タイマーモード -->
+            <div id="mode-timer" class="top-mode-content">
+                <div class="timer-setup" id="timer-setup">
+                    <div class="timer-col">
+                        <button id="timer-h-up">▲</button>
+                        <div id="timer-setting-h" class="time-display-val">00</div>
+                        <button id="timer-h-down">▼</button>
+                    </div>
+                    <div class="timer-unit-setup">時</div>
+                    <div class="timer-col">
+                        <button id="timer-m-up">▲</button>
+                        <div id="timer-setting-m" class="time-display-val">05</div>
+                        <button id="timer-m-down">▼</button>
+                    </div>
+                    <div class="timer-unit-setup">分</div>
+                </div>
+                <div id="timer-display" class="time-display-group" style="display:none;">
+                    <span id="tm-h" class="time-num">00</span><span class="time-unit">時</span>
+                    <span id="tm-m" class="time-num">00</span><span class="time-unit">分</span>
+                    <span id="tm-s" class="time-num">00</span><span class="time-unit">秒</span>
+                </div>
+                <div class="control-btns">
+                    <button id="timer-start-stop">スタート</button>
+                    <button id="timer-reset">リセット</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 中フレーム：カレンダー表示 -->
+        <div class="frame middle-frame">
+            <div class="calendar-header">
+                <button id="prev-month">◀ 前月</button>
+                <h2 id="calendar-month-year"></h2>
+                <button id="next-month">次月 ▶</button>
+            </div>
+            <table class="calendar-table">
+                <thead>
+                    <tr>
+                        <th style="color:red;">日</th>
+                        <th>月</th>
+                        <th>火</th>
+                        <th>水</th>
+                        <th>木</th>
+                        <th>金</th>
+                        <th style="color:blue;">土</th>
+                    </tr>
+                </thead>
+                <tbody id="calendar-body">
+                    <!-- カレンダーの中身がここに生成されます -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 下フレーム：お知らせ -->
+        <div class="frame bottom-frame">
+            <div class="notice-wrapper">
+                <div class="notice-header">
+                    <div class="notice-tabs">
+                        <button class="notice-tab-btn active" data-tab="upcoming">これからのイベント</button>
+                        <button class="notice-tab-btn" data-tab="past">過去のイベント</button>
+                    </div>
+                    <div class="pagination-controls">
+                        <button id="prev-notice">◀</button>
+                        <span id="notice-page-indicator">1 / 1</span>
+                        <button id="next-notice">▶</button>
+                    </div>
+                </div>
+                <ul id="notice-list" class="notice-list">
+                    <!-- フィードからパースされたリストがここに生成されます -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- フッターフレーム：QRコード -->
+        <div class="frame footer-frame">
+            <div class="qr-wrapper-horizontal">
+                <div class="qr-text">愛媛大学ミュージアム ポータルサイト</div>
+                <img src="./QR_458893.png" alt="QR Code">
+            </div>
+        </div>
+
+    </div>
+
+
+    <dialog id="event-reminder-dialog" aria-labelledby="event-reminder-title">
+        <article class="event-reminder-card">
+            <p class="event-reminder-kicker">開始10分前のお知らせ</p>
+            <div class="event-reminder-badges">
+                <span id="event-reminder-type" class="event-reminder-badge"></span>
+                <span id="event-reminder-exclusive" class="event-reminder-badge is-exclusive" hidden>貸切</span>
+            </div>
+            <h2 id="event-reminder-title" class="event-reminder-heading"></h2>
+            <p id="event-reminder-datetime" class="event-reminder-datetime"></p>
+            <p id="event-reminder-organizer" class="event-reminder-organizer" hidden></p>
+            <p id="event-reminder-excerpt" class="event-reminder-excerpt" hidden></p>
+            <button id="event-reminder-close" class="event-reminder-close" type="button">閉じる</button>
+        </article>
+    </dialog>
+
+    <script src="mergeFeeds.js" defer></script>
+    <script src="index.js" defer></script>
+    <script src="heartbeat.js" defer></script>
+
+    <script>
+        (() => {
+            'use strict';
+
+            const REMINDER_LEAD_MS = 10 * 60 * 1000;
+            const REMINDER_CHECK_INTERVAL_MS = 1000;
+            const FEED_REFRESH_INTERVAL_MS = 15 * 60 * 1000;
+            const DISMISSED_STORAGE_KEY = 'imaginedeck-dismissed-event-reminders-v1';
+
+            document.addEventListener('DOMContentLoaded', () => {
+                setInterval(() => {
+                    if (typeof refreshFeedsWhenIdle === 'function') {
+                        refreshFeedsWhenIdle();
+                    }
+                }, FEED_REFRESH_INTERVAL_MS);
+
+                const dialog = document.getElementById('event-reminder-dialog');
+                const closeButton = document.getElementById('event-reminder-close');
+                const typeElement = document.getElementById('event-reminder-type');
+                const exclusiveElement = document.getElementById('event-reminder-exclusive');
+                const titleElement = document.getElementById('event-reminder-title');
+                const dateTimeElement = document.getElementById('event-reminder-datetime');
+                const organizerElement = document.getElementById('event-reminder-organizer');
+                const excerptElement = document.getElementById('event-reminder-excerpt');
+
+                if (!dialog || !closeButton || typeof dialog.showModal !== 'function') {
+                    console.warn('[ImagineDeck] Event reminder dialog is not supported.');
+                    return;
+                }
+
+                let activeReminderKey = null;
+                let activeReminderStartMs = null;
+                let checkingReminder = false;
+                const dismissedReminderKeys = loadDismissedReminderKeys();
+
+                function loadDismissedReminderKeys() {
+                    try {
+                        const stored = JSON.parse(sessionStorage.getItem(DISMISSED_STORAGE_KEY) || '[]');
+                        return new Set(Array.isArray(stored) ? stored.filter(value => typeof value === 'string') : []);
+                    } catch (error) {
+                        console.warn('[ImagineDeck] Failed to load dismissed reminders.', error);
+                        return new Set();
+                    }
+                }
+
+                function saveDismissedReminderKeys() {
+                    try {
+                        sessionStorage.setItem(
+                            DISMISSED_STORAGE_KEY,
+                            JSON.stringify(Array.from(dismissedReminderKeys))
+                        );
+                    } catch (error) {
+                        console.warn('[ImagineDeck] Failed to save dismissed reminders.', error);
+                    }
+                }
+
+                function eventReminderKey(event) {
+                    const identity = event.id == null || event.id === ''
+                        ? event.title || 'event'
+                        : String(event.id);
+                    return `${identity}|${event.date}|${event.startTime}`;
+                }
+
+                function eventStartTimestamp(event) {
+                    const dateMatch = /^(\d{4})\.(\d{2})\.(\d{2})$/.exec(event.date || '');
+                    const timeMatch = /^(\d{1,2}):(\d{2})$/.exec(event.startTime || '');
+                    if (!dateMatch || !timeMatch) {
+                        return null;
+                    }
+
+                    const year = Number(dateMatch[1]);
+                    const month = Number(dateMatch[2]);
+                    const day = Number(dateMatch[3]);
+                    const hour = Number(timeMatch[1]);
+                    const minute = Number(timeMatch[2]);
+
+                    if (
+                        month < 1 || month > 12 ||
+                        day < 1 || day > 31 ||
+                        hour < 0 || hour > 23 ||
+                        minute < 0 || minute > 59
+                    ) {
+                        return null;
+                    }
+
+                    const start = new Date(year, month - 1, day, hour, minute, 0, 0);
+                    if (
+                        start.getFullYear() !== year ||
+                        start.getMonth() !== month - 1 ||
+                        start.getDate() !== day ||
+                        start.getHours() !== hour ||
+                        start.getMinutes() !== minute
+                    ) {
+                        return null;
+                    }
+                    return start.getTime();
+                }
+
+                function getTypeLabel(type) {
+                    switch (type) {
+                        case 'event': return 'イベント';
+                        case 'workshop': return 'ワークショップ';
+                        case 'exhibition': return '企画展';
+                        case 'other': return 'その他';
+                        default: return 'お知らせ';
+                    }
+                }
+
+                function dueReminders(nowMs) {
+                    if (typeof allNotices === 'undefined' || !Array.isArray(allNotices)) {
+                        return [];
+                    }
+
+                    return allNotices
+                        .map((event, index) => ({
+                            event,
+                            index,
+                            startMs: eventStartTimestamp(event),
+                            key: eventReminderKey(event)
+                        }))
+                        .filter(candidate =>
+                            candidate.event.kind === 'upcoming' &&
+                            candidate.startMs !== null &&
+                            nowMs >= candidate.startMs - REMINDER_LEAD_MS &&
+                            nowMs < candidate.startMs &&
+                            !dismissedReminderKeys.has(candidate.key)
+                        )
+                        .sort((a, b) => a.startMs - b.startMs || a.index - b.index);
+                }
+
+                function setOptionalText(element, value) {
+                    const text = value == null ? '' : String(value).trim();
+                    element.textContent = text;
+                    element.hidden = text === '';
+                }
+
+                function renderReminder(candidate) {
+                    const event = candidate.event;
+                    typeElement.textContent = getTypeLabel(event.type);
+                    exclusiveElement.hidden = !event.exclusive;
+                    titleElement.textContent = event.title || 'イベント';
+                    dateTimeElement.textContent =
+                        `${event.date || ''} ${event.startTime || ''}` +
+                        (event.endTime ? `〜${event.endTime}` : '');
+                    setOptionalText(organizerElement, event.organizer);
+                    setOptionalText(excerptElement, event.excerpt);
+                    activeReminderKey = candidate.key;
+                    activeReminderStartMs = candidate.startMs;
+                }
+
+                function showNextReminder() {
+                    if (checkingReminder) {
+                        return;
+                    }
+
+                    const nowMs = Date.now();
+                    if (dialog.open) {
+                        if (activeReminderStartMs !== null && nowMs >= activeReminderStartMs) {
+                            dialog.close('expired');
+                            return;
+                        }
+
+                        const currentCandidate = dueReminders(nowMs)
+                            .find(candidate => candidate.key === activeReminderKey);
+                        if (!currentCandidate) {
+                            dialog.close('stale');
+                            return;
+                        }
+
+                        renderReminder(currentCandidate);
+                        return;
+                    }
+
+                    checkingReminder = true;
+                    try {
+                        const [candidate] = dueReminders(nowMs);
+                        if (!candidate) {
+                            return;
+                        }
+                        renderReminder(candidate);
+                        dialog.returnValue = '';
+                        dialog.showModal();
+                    } finally {
+                        checkingReminder = false;
+                    }
+                }
+
+                function closeReminder() {
+                    if (dialog.open) {
+                        dialog.close('dismissed');
+                    }
+                }
+
+                closeButton.addEventListener('click', closeReminder);
+
+                dialog.addEventListener('cancel', event => {
+                    event.preventDefault();
+                    closeReminder();
+                });
+
+                dialog.addEventListener('click', event => {
+                    if (event.target !== dialog) {
+                        return;
+                    }
+                    const rect = dialog.getBoundingClientRect();
+                    const insideDialog =
+                        event.clientX >= rect.left &&
+                        event.clientX <= rect.right &&
+                        event.clientY >= rect.top &&
+                        event.clientY <= rect.bottom;
+                    if (!insideDialog) {
+                        closeReminder();
+                    }
+                });
+
+                dialog.addEventListener('close', () => {
+                    if (dialog.returnValue === 'dismissed' && activeReminderKey) {
+                        dismissedReminderKeys.add(activeReminderKey);
+                        saveDismissedReminderKeys();
+                    }
+                    activeReminderKey = null;
+                    activeReminderStartMs = null;
+                    queueMicrotask(showNextReminder);
+                });
+
+                setInterval(showNextReminder, REMINDER_CHECK_INTERVAL_MS);
+                showNextReminder();
+            });
+        })();
+    </script>
+</body>
+
+</html>

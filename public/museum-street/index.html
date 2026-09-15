@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>松山ミュージアムストリート</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
+    <link rel="canonical" href="https://portal.museum.ehime-u.ac.jp/museum-street/" />
+    <link rel="manifest" href="/manifest.json">
+    <script src="/resume-guard.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <!-- Firebase SDK -->
+    <script src="/__/firebase/8.10.1/firebase-app.js"></script>
+    <script src="/__/firebase/8.10.1/firebase-firestore.js"></script>
+    <script src="/__/firebase/init.js"></script>
+</head>
+<body class="p-0 m-0 h-[100dvh] overflow-hidden text-slate-200 flex flex-col">
+
+    <div class="nebula-layer"></div>
+    <div class="star-dust"></div>
+
+    <div class="flex-grow flex w-full max-w-screen-2xl mx-auto z-10 min-h-0 relative px-[env(safe-area-inset-left)] py-[env(safe-area-inset-top)] pr-[env(safe-area-inset-right)] pb-[env(safe-area-inset-bottom)] flex-col md:flex-row">
+
+        <!-- Mobile Sidebar Backdrop -->
+        <div id="nav-backdrop" class="fixed inset-0 bg-black/60 z-[100] hidden md:hidden backdrop-blur-sm transition-opacity opacity-0"></div>
+
+        <nav class="fixed inset-y-0 left-0 w-4/5 max-w-sm z-[200] transform -translate-x-full transition-transform duration-300 ease-in-out md:static md:translate-x-0 md:w-1/3 xl:w-1/4 overflow-y-auto overflow-x-hidden flex flex-col gap-2 bg-slate-900/95 md:bg-transparent backdrop-blur-md md:backdrop-blur-none p-2 md:p-0 border-r border-slate-700/50 md:border-none shadow-2xl md:shadow-none" id="museum-nav">
+            <div class="sticky top-0 z-20 bg-slate-900/80 backdrop-blur pb-2 pt-2 rounded-md">
+                <div class="flex items-center justify-center mb-2 px-2 relative min-h-[40px]">
+                    <a href="/" class="absolute left-2 w-10 h-10 rounded-full cosmic-card text-slate-300 hover:text-white transition-all duration-300 flex-shrink-0 flex items-center justify-center opacity-60 hover:opacity-100">
+                        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                    </a>
+                    <div class="flex flex-col items-center text-center min-w-0 overflow-visible">
+                        <h1 class="text-sm font-bold tracking-wider text-white drop-shadow-lg whitespace-nowrap">松山ミュージアムストリート</h1>
+                        <p class="text-xs font-light text-slate-400 tracking-wide whitespace-nowrap">知的好奇心を満たす、文化と歴史の散歩道</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <a href="#" data-page="1" class="museum-item cosmic-card p-2 flex items-center gap-3 group">
+                    <div class="plasma-sphere w-10 h-10 flex-shrink-0 bg-slate-500 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white icon-glow"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-100">愛媛県美術館</h2>
+                        <p class="text-xs text-slate-400">多彩な企画展とコレクション</p>
+                    </div>
+                </a>
+                <a href="#" data-page="2" class="museum-item cosmic-card p-2 flex items-center gap-3 group">
+                    <div class="plasma-sphere w-10 h-10 flex-shrink-0 bg-slate-500 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white icon-glow"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-100">萬翠荘</h2>
+                        <p class="text-xs text-slate-400">大正ロマンの香るフランス邸宅</p>
+                    </div>
+                </a>
+                <a href="#" data-page="3" class="museum-item cosmic-card p-2 flex items-center gap-3 group">
+                    <div class="plasma-sphere w-10 h-10 flex-shrink-0 bg-slate-500 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white icon-glow"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-100">坂の上の雲ミュージアム</h2>
+                        <p class="text-xs text-slate-400">松山の近代化の物語</p>
+                    </div>
+                </a>
+                <a href="#" data-page="4" class="museum-item cosmic-card p-2 flex items-center gap-3 group">
+                    <div class="plasma-sphere w-10 h-10 flex-shrink-0 bg-slate-500 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white icon-glow"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-100">子規記念博物館</h2>
+                        <p class="text-xs text-slate-400">正岡子規の生涯と文学</p>
+                    </div>
+                </a>
+                <a href="#" data-page="5" class="museum-item cosmic-card p-2 flex items-center gap-3 group">
+                    <div class="plasma-sphere w-10 h-10 flex-shrink-0 bg-slate-500 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white icon-glow"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-100">道後公園 湯築城跡</h2>
+                        <p class="text-xs text-slate-400">中世の城跡を散策</p>
+                    </div>
+                </a>
+                <a href="#" data-page="6" class="museum-item cosmic-card p-2 flex items-center gap-3 group">
+                    <div class="plasma-sphere w-10 h-10 flex-shrink-0 bg-slate-500 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white icon-glow"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-100">ミウラート・ヴィレッジ</h2>
+                        <p class="text-xs text-slate-400">三浦美術館の愛称</p>
+                    </div>
+                </a>
+                <a href="#" data-page="7" class="museum-item cosmic-card p-2 flex items-center gap-3 group">
+                    <div class="plasma-sphere w-10 h-10 flex-shrink-0 bg-slate-500 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white icon-glow"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-100">セキ美術館</h2>
+                        <p class="text-xs text-slate-400">近現代日本画と洋画、ロダン彫刻</p>
+                    </div>
+                </a>
+                <a href="#" data-page="8" class="museum-item cosmic-card p-2 flex items-center gap-3 group">
+                    <div class="plasma-sphere w-10 h-10 flex-shrink-0 bg-slate-500 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white icon-glow"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-100">秋山兄弟生誕地</h2>
+                        <p class="text-xs text-slate-400">日露戦争で活躍した兄弟の軌跡</p>
+                    </div>
+                </a>
+                <a href="#" data-page="9" class="museum-item cosmic-card p-2 flex items-center gap-3 group">
+                    <div class="plasma-sphere w-10 h-10 flex-shrink-0 bg-slate-500 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white icon-glow"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-100">二之丸史跡庭園</h2>
+                        <p class="text-xs text-slate-400">恋人の聖地、安らぎの庭園</p>
+                    </div>
+                </a>
+                <a href="#" data-page="10" class="museum-item cosmic-card p-2 flex items-center gap-3 group">
+                    <div class="plasma-sphere w-10 h-10 flex-shrink-0 bg-slate-500 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white icon-glow"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-100">愛媛大学ミュージアム</h2>
+                        <p class="text-xs text-slate-400">大学の知を結集した博物館</p>
+                    </div>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="flex-grow w-full md:w-2/3 xl:w-3/4 flex flex-col p-2 md:pl-0 md:pr-2 md:py-2 gap-2 md:ml-4">
+            
+            <!-- Mobile Header -->
+            <div class="md:hidden flex items-center justify-between z-20 cosmic-card p-2 rounded-lg bg-slate-900/80 shadow-[0_0_15px_rgba(0,0,0,0.5)] flex-shrink-0">
+                <div class="flex items-center gap-3">
+                    <button id="menu-toggle" class="w-10 h-10 rounded-full flex items-center justify-center text-slate-300 hover:text-white transition-all bg-slate-800/80 flex-shrink-0 active:scale-95">
+                        <i data-lucide="menu" class="w-5 h-5 pointer-events-none"></i>
+                    </button>
+                    <div class="flex flex-col min-w-0">
+                        <h1 class="text-sm font-bold text-white tracking-wider whitespace-nowrap overflow-hidden text-ellipsis">松山ミュージアムストリート</h1>
+                        <p class="text-[10px] text-slate-400 whitespace-nowrap overflow-hidden text-ellipsis">知的好奇心を満たす散歩道</p>
+                    </div>
+                </div>
+                <a href="/" class="w-10 h-10 rounded-full flex items-center justify-center text-slate-300 hover:text-white bg-slate-800/80 flex-shrink-0 ml-2">
+                    <i data-lucide="home" class="w-4 h-4"></i>
+                </a>
+            </div>
+
+            <!-- Tabs UI -->
+            <div class="flex gap-2 w-full h-10 flex-shrink-0 z-20">
+                <button id="tab-events" class="flex-1 cosmic-card text-sm font-bold text-center rounded-lg transition-all duration-300 bg-slate-800/80 text-white shadow-[0_0_10px_rgba(255,255,255,0.1)] active-tab">
+                    イベント情報
+                </button>
+                <button id="tab-map" class="flex-1 cosmic-card text-sm font-medium text-center rounded-lg transition-all duration-300 bg-slate-900/40 text-slate-400 opacity-60 hover:opacity-100 inactive-tab">
+                    周辺地図
+                </button>
+            </div>
+
+            <!-- Content Area -->
+            <div class="flex-grow w-full h-full relative cosmic-card rounded-lg overflow-hidden border border-slate-700/50 bg-slate-900/50 backdrop-blur-sm z-10 min-h-0">
+                <iframe id="content-frame" class="absolute inset-0 w-full h-full border-none block bg-transparent" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
+                <iframe id="map-frame" class="absolute left-0 w-full border-none hidden bg-transparent" style="top: -52px; height: calc(100% + 52px);"></iframe>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof firebase === 'undefined' || !firebase.firestore) return;
+            const db = firebase.firestore();
+            const navContainer = document.getElementById('museum-nav');
+            
+            db.collection("museumIcons").get({ source: 'cache' }).then((querySnapshot) => {
+                if (!querySnapshot.empty) {
+                    renderIcons(querySnapshot);
+                }
+            }).catch((error) => {
+                console.warn('[DEBUG] Failed to fetch museum icons from cache', error);
+            });
+
+            db.collection("museumIcons").get({ source: 'server' }).then((querySnapshot) => {
+                if (!querySnapshot.empty) {
+                    renderIcons(querySnapshot);
+                }
+            }).catch((error) => {
+                console.warn('[DEBUG] Failed to fetch museum icons from server', error);
+            });
+
+            function renderIcons(querySnapshot) {
+                const defaultColors = {
+                    "1": "#235633", "2": "#a97f71", "3": "#7bc6fa", "4": "#7c4846", "5": "#d58e53",
+                    "6": "#a6373e", "7": "#e5d6cd", "8": "#fba9ab", "9": "#1c2d70", "10": "#aea356"
+                };
+
+                querySnapshot.forEach((doc) => {
+                    const iconData = doc.data();
+                    const docId = doc.id;
+                    const existingLink = navContainer.querySelector(`[data-page="${docId}"]`);
+                    if (existingLink) {
+                        const iconContainer = existingLink.querySelector('.plasma-sphere');
+                        if (iconContainer) {
+                            if (iconData.svgContent) iconContainer.innerHTML = iconData.svgContent;
+                            const bgColorHex = iconData.backgroundColor || defaultColors[docId];
+                            iconContainer.className = 'plasma-sphere w-10 h-10 flex-shrink-0'; 
+                            iconContainer.style.backgroundColor = '#' + bgColorHex.replace('#', ''); 
+                        }
+                    }
+                });
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            }
+        });
+    </script>
+</body>
+</html>

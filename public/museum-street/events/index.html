@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>イベント一覧</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white p-8">
+    <div class="container mx-auto">
+        <header class="mb-8">
+            <h1 class="text-4xl font-bold mb-4">イベント一覧</h1>
+            <nav>
+                <a href="../index.html" class="text-blue-400 hover:underline">ミュージアムストリートに戻る</a>
+                <span class="mx-2 text-gray-500">|</span>
+                <a href="/" class="text-blue-400 hover:underline">トップに戻る</a>
+            </nav>
+        </header>
+        <main>
+            <ul class="space-y-4">
+                <li><a href="01-events.html" class="text-xl text-blue-300 hover:underline">愛媛県美術館のイベント</a></li>
+                <li><a href="02-events.html" class="text-xl text-blue-300 hover:underline">萬翠荘のイベント</a></li>
+                <li><a href="03-events.html" class="text-xl text-blue-300 hover:underline">坂の上の雲ミュージアムのイベント</a></li>
+                <li><a href="04-events.html" class="text-xl text-blue-300 hover:underline">セキ美術館のイベント</a></li>
+                <li><a href="05-events.html" class="text-xl text-blue-300 hover:underline">国史跡 道後公園 湯築城跡のイベント</a></li>
+                <li><a href="06-events.html" class="text-xl text-blue-300 hover:underline">ミウラート・ヴィレッジ（三浦美術館）のイベント</a></li>
+                <li><a href="07-events.html" class="text-xl text-blue-300 hover:underline">子規記念博物館のイベント</a></li>
+                <li><a href="08-events.html" class="text-xl text-blue-300 hover:underline">秋山兄弟生誕地のイベント</a></li>
+                <li><a href="09-events.html" class="text-xl text-blue-300 hover:underline">二之丸史跡庭園のイベント</a></li>
+                <li><a href="10-events.html" class="text-xl text-blue-300 hover:underline">愛媛大学ミュージアムのイベント</a></li>
+            </ul>
+        </main>
+    </div>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('Service worker registered.', reg))
+                    .catch(err => console.log('Service worker registration failed: ', err));
+            });
+        }
+    </script>
+</body>
+</html>

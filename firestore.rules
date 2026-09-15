@@ -1,0 +1,18 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /museumIcons/{document=**} {
+      // 誰でも読み取り可能
+      allow read: if true;
+      // しばらくの間は、誰でも書き込み可能にする
+      allow write: if true;
+    }
+    match /portalCards/{document=**} {
+      allow read, write: if true;
+    }
+    match /pageSettings/{document=**} {
+      allow read, write: if true;
+    }
+  }
+}

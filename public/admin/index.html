@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理パネル - ミュージアム・ポータル</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0f172a; color: white; font-family: 'Inter', sans-serif; }
+        .hidden-content { display: none; }
+    </style>
+</head>
+<body class="flex items-center justify-center h-screen overflow-hidden">
+    <div id="auth-guard" class="text-center p-8 bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 shadow-2xl max-w-sm w-full mx-4">
+        <h2 class="text-xl font-bold mb-4">認証が必要です</h2>
+        <p class="text-slate-400 text-sm mb-6">管理用パスコードを入力してください。</p>
+        <div class="mb-4">
+            <input type="password" id="pass-input" placeholder="••••••••" class="w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500/50 text-white placeholder-slate-500 transition-all font-mono">
+        </div>
+        <button id="auth-btn" class="w-full py-3 bg-cyan-600 hover:bg-cyan-500 rounded-lg font-medium transition-colors shadow-lg shadow-cyan-900/20">
+            認証する
+        </button>
+    </div>
+
+    <div id="admin-content" class="hidden-content w-full h-[100dvh] flex-col p-6 overflow-auto">
+        <header class="flex justify-between items-center mb-8 pb-4 border-b border-slate-800">
+            <h1 class="text-2xl font-bold tracking-tight">管理ダッシュボード</h1>
+            <a href="/" class="text-sm bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-lg transition-colors">戻る</a>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- 管理メニュー -->
+            <div class="bg-slate-800/30 p-6 rounded-xl border border-slate-700/50">
+                <h3 class="font-semibold mb-2">ミュージアムストリート<br>アイコン確認・コード編集</h3>
+                <p class="text-slate-400 text-sm">松山ミュージアムストリート用SVGアイコンのプレビューと修正用コードの確認を行います。</p>
+                <a href="view-icons.html" class="inline-block mt-4 text-xs bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded transition-colors shadow-lg shadow-cyan-900/20">開く</a>
+            </div>
+            <div class="bg-slate-800/30 p-6 rounded-xl border border-slate-700/50">
+                <h3 class="font-semibold mb-2">アクセス統計</h3>
+                <p class="text-slate-400 text-sm">訪問者の統計データを確認します。</p>
+                <button disabled class="mt-4 text-xs bg-slate-700 text-slate-500 px-3 py-1.5 rounded cursor-not-allowed">Coming Soon</button>
+            </div>
+            <div class="bg-slate-800/30 p-6 rounded-xl border border-slate-700/50">
+                <h3 class="font-semibold mb-2">ポータルカード編集</h3>
+                <p class="text-slate-400 text-sm">トップページの8枚のカード情報を編集します。</p>
+                <a href="edit-portal.html" class="inline-block mt-4 text-xs bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded transition-colors shadow-lg shadow-cyan-900/20">開く</a>
+            </div>
+            <div class="bg-slate-800/30 p-6 rounded-xl border border-slate-700/50">
+                <h3 class="font-semibold mb-2">イマジン・デッキ 室内サイネージ</h3>
+                <p class="text-slate-400 text-sm">イマジンデッキのデジタルサイネージ画面を表示します。</p>
+                <a href="/imaginedeck/" class="inline-block mt-4 text-xs bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded transition-colors shadow-lg shadow-cyan-900/20">開く</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const hashPasscode = '3056d5cdd96bfee8d8ab6d5f554f5607a1bb32963d8e64b8f28d1b0f73d2de72';
+        const storageKey = 'admin_auth_token';
+
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        function showDashboard() {
+            document.getElementById('auth-guard').classList.add('hidden');
+            document.getElementById('admin-content').classList.replace('hidden-content', 'flex');
+        }
+
+        async function authenticate() {
+            const input = document.getElementById('pass-input');
+            const password = input.value;
+            if (!password) return;
+
+            const hashedInput = await sha256(password);
+            if (hashedInput === hashPasscode) {
+                localStorage.setItem(storageKey, hashedInput);
+                showDashboard();
+            } else {
+                alert('パスコードが正しくありません。');
+                input.value = '';
+                input.focus();
+            }
+        }
+
+        document.getElementById('auth-btn').onclick = authenticate;
+        document.getElementById('pass-input').onkeydown = (e) => {
+            if (e.key === 'Enter') authenticate();
+        };
+
+        // ページ読み込み時の自動チェック
+        window.onload = async () => {
+            const storedToken = localStorage.getItem(storageKey);
+            if (storedToken === hashPasscode) {
+                showDashboard();
+            } else {
+                document.getElementById('pass-input').focus();
+            }
+        };
+    </script>
+</body>
+</html>

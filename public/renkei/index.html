@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>愛媛大学研究協力会の紹介</title>
+    <script src="/resume-guard.js"></script>
+    <!-- Core UI -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Base styles from parent -->
+    <link rel="stylesheet" href="../index.css">
+    <!-- Page specific styles -->
+    <link rel="stylesheet" href="index.css">
+
+    <!-- SEO & Icons -->
+    <link rel="canonical" href="https://portal.museum.ehime-u.ac.jp/renkei/" />
+
+    <!-- Firebase SDK -->
+    <script src="/__/firebase/8.10.1/firebase-app.js"></script>
+    <script src="/__/firebase/8.10.1/firebase-firestore.js"></script>
+    <script src="/__/firebase/init.js"></script>
+</head>
+
+<body class="p-0 m-0 h-[100dvh] flex flex-col items-center relative overflow-hidden text-slate-800" style="background-color: #e8edfd;">
+
+    <!-- Main Content Area -->
+    <!-- Background visual effects (nebula/star-dust) removed as per request -->
+
+    <!-- Header Section -->
+    <header
+        class="w-full max-w-md landscape:max-w-4xl sm:max-w-xl md:max-w-5xl px-4 text-center mt-4 sm:mt-6 mb-2 relative z-10 flex-shrink-0">
+        <!-- Back Navigation -->
+        <a href="/"
+            class="back-button absolute left-2 sm:left-4 top-0 text-slate-400 flex items-center gap-1 text-xs sm:text-sm">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+            <span>Portal</span>
+        </a>
+
+
+
+        <h1 id="page-title" data-customizable="true"
+            class="text-lg sm:text-2xl font-bold tracking-normal sm:tracking-[0.1em] whitespace-nowrap text-slate-900 drop-shadow-[0_0_10px_rgba(0,0,0,0.1)] transition-colors duration-300">
+            愛媛大学研究協力会の紹介
+        </h1>
+    </header>
+
+    <!-- Main Content -->
+    <main
+        class="w-full max-w-md landscape:max-w-4xl sm:max-w-xl md:max-w-5xl px-4 sm:px-6 relative z-10 flex-1 flex flex-col min-h-0">
+        <!-- Sticky Navigation Area -->
+        <nav id="tab-navigation" class="flex flex-wrap justify-center gap-1 sm:gap-2 py-2 mb-2 sm:mb-4 w-full">
+            <!-- Tabs injected by JS -->
+        </nav>
+
+        <!-- Dynamic Content Area -->
+        <section id="tab-content" class="flex-1 min-h-0 overflow-hidden mb-2 sm:mb-4">
+            <!-- Content injected by JS -->
+        </section>
+    </main>
+
+    <footer class="mt-auto mb-2 sm:mb-4 text-center relative z-10 flex-shrink-0 select-none">
+        <div
+            class="inline-block py-1 sm:py-2 px-4 rounded-full bg-slate-900/50 border border-slate-700/50 backdrop-blur-md">
+            <p class="text-[10px] sm:text-[12px] font-medium text-slate-300 mb-0.5">愛媛大学研究協力会の企業を表示しています</p>
+            <p class="text-[8px] sm:text-[9px] tracking-[0.3em] font-light text-slate-500 uppercase">Knowledge Portal //
+                Ehime Univ. Museum // Collaboration</p>
+        </div>
+    </footer>
+
+    <!-- Color Picker Modal -->
+    <div id="color-picker-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-slate-900 border border-slate-700/50 rounded-2xl p-6 shadow-2xl w-11/12 max-w-sm transform scale-95 transition-transform duration-300 text-slate-200">
+            <h3 class="text-lg font-bold mb-4 text-cyan-300 drop-shadow-glow flex items-center gap-2">
+                <i data-lucide="palette" class="w-5 h-5"></i>
+                背景色の設定
+            </h3>
+            
+            <div class="mb-4">
+                <label for="bg-color-input" class="block text-xs text-slate-400 mb-2">カスタムカラーを選択</label>
+                <div class="flex items-center gap-3">
+                    <input type="color" id="bg-color-input" class="w-12 h-12 rounded cursor-pointer border-0 bg-transparent p-0" value="#000000">
+                    <span id="bg-color-hex" class="text-sm font-mono bg-slate-800 px-3 py-1 rounded w-full border border-slate-700">#000000</span>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-xs text-slate-400 mb-2">プリセット</label>
+                <div class="flex flex-wrap gap-2">
+                    <button class="w-8 h-8 rounded-full border border-slate-600 bg-[#000000] preset-color-btn" data-color="#000000" aria-label="Black"></button>
+                    <button class="w-8 h-8 rounded-full border border-slate-600 bg-[#0f172a] preset-color-btn" data-color="#0f172a" aria-label="Slate"></button>
+                    <button class="w-8 h-8 rounded-full border border-slate-600 bg-[#172554] preset-color-btn" data-color="#172554" aria-label="Blue"></button>
+                    <button class="w-8 h-8 rounded-full border border-slate-600 bg-[#2e1065] preset-color-btn" data-color="#2e1065" aria-label="Purple"></button>
+                    <button class="w-8 h-8 rounded-full border border-slate-600 bg-[#064e3b] preset-color-btn" data-color="#064e3b" aria-label="Emerald"></button>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-6">
+                <button id="color-picker-cancel" class="px-4 py-2 rounded text-sm text-slate-400 hover:text-white transition-colors">キャンセル</button>
+                <button id="color-picker-save" class="px-4 py-2 rounded text-sm bg-cyan-600 hover:bg-cyan-500 text-white font-medium transition-colors shadow-lg shadow-cyan-900/50">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Text Color Picker Modal -->
+    <div id="text-color-picker-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-slate-900 border border-slate-700/50 rounded-2xl p-6 shadow-2xl w-11/12 max-w-sm transform scale-95 transition-transform duration-300 text-slate-200">
+            <h3 class="text-lg font-bold mb-4 text-cyan-300 drop-shadow-glow flex items-center gap-2">
+                <i data-lucide="type" class="w-5 h-5"></i>
+                テキスト色の設定
+            </h3>
+            
+            <div class="mb-4">
+                <label for="text-color-input" class="block text-xs text-slate-400 mb-2">カスタムカラーを選択</label>
+                <div class="flex items-center gap-3">
+                    <input type="color" id="text-color-input" class="w-12 h-12 rounded cursor-pointer border-0 bg-transparent p-0" value="#1e293b">
+                    <span id="text-color-hex" class="text-sm font-mono bg-slate-800 px-3 py-1 rounded w-full border border-slate-700">#1e293b</span>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-xs text-slate-400 mb-2">プリセット</label>
+                <div class="flex flex-wrap gap-2">
+                    <button class="w-8 h-8 rounded-full border border-slate-600 bg-[#1e293b] preset-text-color-btn" data-color="#1e293b" aria-label="Slate Dark"></button>
+                    <button class="w-8 h-8 rounded-full border border-slate-600 bg-[#f8fafc] preset-text-color-btn" data-color="#f8fafc" aria-label="Slate Light"></button>
+                    <button class="w-8 h-8 rounded-full border border-slate-600 bg-[#67e8f9] preset-text-color-btn" data-color="#67e8f9" aria-label="Cyan"></button>
+                    <button class="w-8 h-8 rounded-full border border-slate-600 bg-[#fb7185] preset-text-color-btn" data-color="#fb7185" aria-label="Rose"></button>
+                    <button class="w-8 h-8 rounded-full border border-slate-600 bg-[#b1a348] preset-text-color-btn" data-color="#b1a348" aria-label="Gold"></button>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-6">
+                <button id="text-color-picker-cancel" class="px-4 py-2 rounded text-sm text-slate-400 hover:text-white transition-colors">キャンセル</button>
+                <button id="text-color-picker-save" class="px-4 py-2 rounded text-sm bg-cyan-600 hover:bg-cyan-500 text-white font-medium transition-colors shadow-lg shadow-cyan-900/50">保存</button>
+            </div>
+        </div>
+    </div>
+    <!-- Category Title Color Picker Modal -->
+    <div id="cat-title-color-picker-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-slate-900 border border-slate-700/50 rounded-2xl p-6 shadow-2xl w-11/12 max-w-sm transform scale-95 transition-transform duration-300 text-slate-200">
+            <h3 class="text-lg font-bold mb-4 text-cyan-300 drop-shadow-glow flex items-center gap-2">
+                <i data-lucide="hash" class="w-5 h-5"></i>
+                カテゴリー名の設定
+            </h3>
+            
+            <div class="mb-4">
+                <label for="cat-title-color-input" class="block text-xs text-slate-400 mb-2">カスタムカラーを選択</label>
+                <div class="flex items-center gap-3">
+                    <input type="color" id="cat-title-color-input" class="w-12 h-12 rounded cursor-pointer border-0 bg-transparent p-0" value="#67e8f9">
+                    <span id="cat-title-color-hex" class="text-sm font-mono bg-slate-800 px-3 py-1 rounded w-full border border-slate-700">#67e8f9</span>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-xs text-slate-400 mb-2">プリセット</label>
+                <div class="flex flex-wrap gap-2">
+                    <button class="w-8 h-8 rounded-full border border-slate-600 bg-[#67e8f9] preset-cat-title-color-btn" data-color="#67e8f9" aria-label="Cyan"></button>
+                    <button class="w-8 h-8 rounded-full border border-slate-600 bg-[#f8fafc] preset-cat-title-color-btn" data-color="#f8fafc" aria-label="White"></button>
+                    <button class="w-8 h-8 rounded-full border border-slate-600 bg-[#eab308] preset-cat-title-color-btn" data-color="#eab308" aria-label="Yellow"></button>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-6">
+                <button id="cat-title-color-picker-cancel" class="px-4 py-2 rounded text-sm text-slate-400 hover:text-white transition-colors">キャンセル</button>
+                <button id="cat-title-color-picker-save" class="px-4 py-2 rounded text-sm bg-cyan-600 hover:bg-cyan-500 text-white font-medium transition-colors shadow-lg shadow-cyan-900/50">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Description Color Picker Modal -->
+    <div id="cat-desc-color-picker-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-slate-900 border border-slate-700/50 rounded-2xl p-6 shadow-2xl w-11/12 max-w-sm transform scale-95 transition-transform duration-300 text-slate-200">
+            <h3 class="text-lg font-bold mb-4 text-slate-400 flex items-center gap-2">
+                <i data-lucide="info" class="w-5 h-5"></i>
+                カテゴリー説明の設定
+            </h3>
+            
+            <div class="mb-4">
+                <label for="cat-desc-color-input" class="block text-xs text-slate-400 mb-2">カスタムカラーを選択</label>
+                <div class="flex items-center gap-3">
+                    <input type="color" id="cat-desc-color-input" class="w-12 h-12 rounded cursor-pointer border-0 bg-transparent p-0" value="#94a3b8">
+                    <span id="cat-desc-color-hex" class="text-sm font-mono bg-slate-800 px-3 py-1 rounded w-full border border-slate-700">#94a3b8</span>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-xs text-slate-400 mb-2">プリセット</label>
+                <div class="flex flex-wrap gap-2">
+                    <button class="w-8 h-8 rounded-full border border-slate-600 bg-[#94a3b8] preset-cat-desc-color-btn" data-color="#94a3b8" aria-label="Slate"></button>
+                    <button class="w-8 h-8 rounded-full border border-slate-600 bg-[#cbd5e1] preset-cat-desc-color-btn" data-color="#cbd5e1" aria-label="Slate Light"></button>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-6">
+                <button id="cat-desc-color-picker-cancel" class="px-4 py-2 rounded text-sm text-slate-400 hover:text-white transition-colors">キャンセル</button>
+                <button id="cat-desc-color-picker-save" class="px-4 py-2 rounded text-sm bg-cyan-600 hover:bg-cyan-500 text-white font-medium transition-colors shadow-lg shadow-cyan-900/50">保存</button>
+            </div>
+        </div>
+    </div>
+    <!-- Active Tab Style Picker Modal -->
+    <div id="active-tab-style-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-slate-900 border border-slate-700/50 rounded-2xl p-6 shadow-2xl w-11/12 max-w-sm transform scale-95 transition-transform duration-300 text-slate-200">
+            <h3 class="text-lg font-bold mb-4 text-cyan-300 drop-shadow-glow flex items-center gap-2">
+                <i data-lucide="layers" class="w-5 h-5"></i>
+                アクティブタブの設定
+            </h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-2">テキスト色（枠線色も連動）</label>
+                    <div class="flex items-center gap-3">
+                        <input type="color" id="tab-active-text-input" class="w-10 h-10 rounded cursor-pointer border-0 bg-transparent p-0">
+                        <span id="tab-active-text-hex" class="text-xs font-mono bg-slate-800 px-2 py-1 rounded border border-slate-700 flex-1">#67e8f9</span>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-2">背景色</label>
+                    <div class="flex items-center gap-3">
+                        <input type="color" id="tab-active-bg-input" class="w-10 h-10 rounded cursor-pointer border-0 bg-transparent p-0">
+                        <span id="tab-active-bg-hex" class="text-xs font-mono bg-slate-800 px-2 py-1 rounded border border-slate-700 flex-1">#024252</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-8">
+                <button id="active-tab-style-cancel" class="px-4 py-2 rounded text-sm text-slate-400 hover:text-white transition-colors">キャンセル</button>
+                <button id="active-tab-style-save" class="px-4 py-2 rounded text-sm bg-cyan-600 hover:bg-cyan-500 text-white font-medium transition-colors shadow-lg shadow-cyan-900/50">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inactive Tab Style Picker Modal -->
+    <div id="inactive-tab-style-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-slate-900 border border-slate-700/50 rounded-2xl p-6 shadow-2xl w-11/12 max-w-sm transform scale-95 transition-transform duration-300 text-slate-200">
+            <h3 class="text-lg font-bold mb-4 text-slate-400 flex items-center gap-2">
+                <i data-lucide="layers" class="w-5 h-5"></i>
+                通常時のタブ設定
+            </h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-2">テキスト色</label>
+                    <div class="flex items-center gap-3">
+                        <input type="color" id="tab-inactive-text-input" class="w-10 h-10 rounded cursor-pointer border-0 bg-transparent p-0">
+                        <span id="tab-inactive-text-hex" class="text-xs font-mono bg-slate-800 px-2 py-1 rounded border border-slate-700 flex-1">#94a3b8</span>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-2">背景色</label>
+                    <div class="flex items-center gap-3">
+                        <input type="color" id="tab-inactive-bg-input" class="w-10 h-10 rounded cursor-pointer border-0 bg-transparent p-0">
+                        <span id="tab-inactive-bg-hex" class="text-xs font-mono bg-slate-800 px-2 py-1 rounded border border-slate-700 flex-1">#ffffff0d</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-8">
+                <button id="inactive-tab-style-cancel" class="px-4 py-2 rounded text-sm text-slate-400 hover:text-white transition-colors">キャンセル</button>
+                <button id="inactive-tab-style-save" class="px-4 py-2 rounded text-sm bg-slate-700 hover:bg-slate-600 text-white font-medium transition-colors shadow-lg">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Company Card Style Picker Modal -->
+    <div id="card-style-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-slate-900 border border-slate-700/50 rounded-2xl p-6 shadow-2xl w-11/12 max-w-sm transform scale-95 transition-transform duration-300 text-slate-200">
+            <h3 class="text-lg font-bold mb-4 text-cyan-300 drop-shadow-glow flex items-center gap-2">
+                <i data-lucide="layout" class="w-5 h-5"></i>
+                企業カードの設定
+            </h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-2">企業名テキスト色</label>
+                    <div class="flex items-center gap-3">
+                        <input type="color" id="card-text-input" class="w-10 h-10 rounded cursor-pointer border-0 bg-transparent p-0">
+                        <span id="card-text-hex" class="text-xs font-mono bg-slate-800 px-2 py-1 rounded border border-slate-700 flex-1">#e2e8f0</span>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-2">カード背景色</label>
+                    <div class="flex items-center gap-3">
+                        <input type="color" id="card-bg-input" class="w-10 h-10 rounded cursor-pointer border-0 bg-transparent p-0">
+                        <span id="card-bg-hex" class="text-xs font-mono bg-slate-800 px-2 py-1 rounded border border-slate-700 flex-1">#0f1423</span>
+                    </div>
+                    <p class="text-[10px] text-slate-500 mt-2">※透明度は自動的に 60% に調整されます。</p>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-8">
+                <button id="card-style-cancel" class="px-4 py-2 rounded text-sm text-slate-400 hover:text-white transition-colors">キャンセル</button>
+                <button id="card-style-save" class="px-4 py-2 rounded text-sm bg-cyan-600 hover:bg-cyan-500 text-white font-medium transition-colors shadow-lg shadow-cyan-900/50">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="index.js" defer></script>
+</body>
+
+</html>

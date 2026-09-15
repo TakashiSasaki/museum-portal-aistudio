@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>愛媛大学ミュージアムポータルサイト</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
+    <link rel="canonical" href="https://portal.museum.ehime-u.ac.jp/" />
+    <link rel="manifest" href="manifest.json">
+
+    <script src="/resume-guard.js"></script>
+
+    <!-- Apple (Safari) Web App Settings -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="愛大ミュージアム">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="/icons/icon-512.png">
+
+    <!-- OGP Tags -->
+    <meta property="og:title" content="愛媛大学ミュージアム ポータルサイト">
+    <meta property="og:description" content="果てしなき知の探求、その入り口。愛媛大学ミュージアムでの企画展、愛媛松山ミュージアムストリートのイベント情報も発信中。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://portal.museum.ehime-u.ac.jp/">
+    <meta property="og:image" content="https://portal.museum.ehime-u.ac.jp/portal-thumbnail.png">
+
+    <!-- Twitter Card Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="愛媛大学ミュージアム ポータルサイト">
+    <meta name="twitter:description" content="果てしなき知の探求、その入り口。愛媛大学ミュージアムでの企画展、愛媛松山ミュージアムストリートのイベント情報も発信中。">
+    <meta name="twitter:image" content="https://portal.museum.ehime-u.ac.jp/portal-thumbnail.png">
+
+    <link rel="stylesheet" href="index.css">
+
+    <!-- Firebase SDK -->
+    <script src="/__/firebase/8.10.1/firebase-app.js"></script>
+    <script src="/__/firebase/8.10.1/firebase-firestore.js"></script>
+    <script src="/__/firebase/init.js"></script>
+</head>
+<body class="p-0 m-0 h-[100dvh] flex flex-col items-center relative overflow-hidden">
+
+    <div class="nebula-layer"></div>
+    <div class="star-dust"></div>
+
+    <!-- PWA Install Button -->
+    <button
+        id="pwa-install-button"
+        class="pwa-install-button group"
+        type="button"
+        aria-label="このサイトをアプリとしてインストール"
+        title="アプリとしてインストール"
+        hidden
+    >
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full text-slate-200 group-hover:text-white transition-colors icon-glow">
+            <!-- Star 1 (gold) -->
+            <path d="M5 5 L5.5 6.5 L7 7 L5.5 7.5 L5 9 L4.5 7.5 L3 7 L4.5 6.5 Z" fill="#b1a348" stroke="none" />
+            <!-- Star 2 (cyan) -->
+            <path d="M19 4 L19.25 5 L20.25 5.25 L19.25 5.5 L19 6.5 L18.75 5.5 L17.75 5.25 L18.75 5 Z" fill="#67e8f9" stroke="none" />
+
+            <!-- Arrow pointing down -->
+            <path d="M12 2v9" />
+            <path d="M8 7l4 4 4-4" />
+
+            <!-- App rectangle with rounded corners -->
+            <rect x="5" y="12" width="14" height="10" rx="2" ry="2" />
+            <!-- Small indicator inside like a home bar -->
+            <path d="M10 18h4" opacity="0.6" />
+        </svg>
+    </button>
+
+    <!-- Header Area: 位置関係を元の状態 (1_English 2_Japanese 3_Slogan) へ復元 -->
+    <header class="w-full max-w-md landscape:max-w-4xl sm:max-w-xl md:max-w-4xl px-2 sm:px-4 text-center mb-2 sm:mb-3 mt-2 landscape:mb-2 landscape:mt-1 relative z-10 flex-shrink-0">
+        <!-- 1. EHIME UNIVERSITY MUSEUM (英字タイトル・ゴールド) -->
+        <div class="flex justify-center items-center gap-1 sm:gap-3 mb-1 sm:mb-4 opacity-90">
+            <span class="h-[1px] w-6 sm:w-8 bg-gradient-to-r from-transparent to-[#b1a348]"></span>
+            <span class="text-[10px] sm:text-[12px] font-bold text-[#b1a348] tracking-[0.2em] sm:tracking-[0.4em] uppercase drop-shadow-[0_0_8px_rgba(177,163,72,0.4)]">
+                Ehime University Museum
+            </span>
+            <span class="h-[1px] w-6 sm:w-8 bg-gradient-to-l from-transparent to-[#b1a348]"></span>
+        </div>
+
+        <!-- 2. ミュージアム・ポータル (日本語メインタイトル) -->
+        <h1 class="text-lg sm:text-3xl font-bold tracking-normal sm:tracking-[0.2em] whitespace-nowrap text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">
+            ミュージアム・ポータル
+        </h1>
+
+        <!-- 3. 果てしなき知の探求、その入り口。 (スローガン・シアン) -->
+        <p class="text-[10px] sm:text-[14px] mt-1 sm:mt-4 font-light text-cyan-300 tracking-normal sm:tracking-[0.15em] drop-shadow-[0_0_8px_rgba(103,232,249,0.3)] opacity-95 whitespace-nowrap slogan-text">
+            果てしなき知の探求、その入り口。
+        </p>
+    </header>
+
+    <!-- Main Grid (Portrait: 2x4, Landscape: 4x2) -->
+    <main class="w-full max-w-md landscape:max-w-4xl sm:max-w-xl md:max-w-4xl px-4 grid grid-cols-2 landscape:grid-cols-4 sm:grid-cols-4 gap-3 relative z-10 flex-1 min-h-0" id="portal-grid">
+        
+        <!-- Slot 1 -->
+        <a href="#" data-slot="1" class="invisible cosmic-card p-3 sm:p-6 flex flex-col items-center justify-center text-center group text-slate-500 default-text-color">
+            <div class="plasma-sphere bg-slate-500 mb-2 sm:mb-4 flex items-center justify-center"></div>
+            <span class="text-[13px] font-medium text-slate-200 leading-tight tracking-wide"></span>
+        </a>
+
+        <!-- Slot 2 -->
+        <a href="#" data-slot="2" class="invisible cosmic-card p-3 sm:p-6 flex flex-col items-center justify-center text-center group text-slate-500 default-text-color">
+            <div class="plasma-sphere bg-slate-500 mb-2 sm:mb-4 flex items-center justify-center"></div>
+            <span class="text-[13px] font-medium text-slate-200 leading-tight tracking-wide"></span>
+        </a>
+
+        <!-- Slot 3 -->
+        <a href="#" data-slot="3" class="invisible cosmic-card p-3 sm:p-6 flex flex-col items-center justify-center text-center group text-slate-500 default-text-color">
+            <div class="plasma-sphere bg-slate-500 mb-2 sm:mb-4 flex items-center justify-center"></div>
+            <span class="text-[13px] font-medium text-slate-200 leading-tight tracking-wide"></span>
+        </a>
+
+        <!-- Slot 4 -->
+        <a href="#" data-slot="4" class="invisible cosmic-card p-3 sm:p-6 flex flex-col items-center justify-center text-center group text-slate-500 default-text-color">
+            <div class="plasma-sphere bg-slate-500 mb-2 sm:mb-4 flex items-center justify-center"></div>
+            <span class="text-[13px] font-medium text-slate-200 leading-tight tracking-wide"></span>
+        </a>
+
+        <!-- Slot 5 -->
+        <a href="#" data-slot="5" class="invisible cosmic-card p-3 sm:p-6 flex flex-col items-center justify-center text-center group text-slate-500 default-text-color">
+            <div class="plasma-sphere bg-slate-500 mb-2 sm:mb-4 flex items-center justify-center"></div>
+            <span class="text-[13px] font-medium text-slate-200 leading-tight tracking-wide"></span>
+        </a>
+
+        <!-- Slot 6 -->
+        <a href="#" data-slot="6" class="invisible cosmic-card p-3 sm:p-6 flex flex-col items-center justify-center text-center group text-slate-500 default-text-color">
+            <div class="plasma-sphere bg-slate-500 mb-2 sm:mb-4 flex items-center justify-center"></div>
+            <span class="text-[13px] font-medium text-slate-200 leading-tight tracking-wide"></span>
+        </a>
+
+        <!-- Slot 7 -->
+        <a href="#" data-slot="7" class="invisible cosmic-card p-3 sm:p-6 flex flex-col items-center justify-center text-center group text-slate-500 default-text-color">
+            <div class="plasma-sphere bg-slate-500 mb-2 sm:mb-4 flex items-center justify-center"></div>
+            <span class="text-[13px] font-medium text-slate-200 leading-tight tracking-wide"></span>
+        </a>
+
+        <!-- Slot 8 -->
+        <a href="#" data-slot="8" class="invisible cosmic-card p-3 sm:p-6 flex flex-col items-center justify-center text-center group text-slate-500 default-text-color">
+            <div class="plasma-sphere bg-slate-500 mb-2 sm:mb-4 flex items-center justify-center"></div>
+            <span class="text-[13px] font-medium text-slate-200 leading-tight tracking-wide"></span>
+        </a>
+
+    </main>
+
+    <!-- Footer Area -->
+    <footer id="footer-trigger" class="mt-2 mb-2 text-center relative z-10 flex-shrink-0 select-none cursor-default">
+        <div class="inline-block py-2 rounded-full bg-slate-900/50 border border-slate-700/50 backdrop-blur-md">
+            <p class="text-[9px] tracking-[0.4em] font-light text-slate-400 uppercase">Knowledge Portal // Ehime Univ. Museum</p>
+        </div>
+    </footer>
+
+    <script src="index.js" defer></script>
+</body>
+</html>

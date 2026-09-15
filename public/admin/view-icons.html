@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Museum Icons Editor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Firebase SDK -->
+    <script src="/__/firebase/8.10.1/firebase-app.js"></script>
+    <script src="/__/firebase/8.10.1/firebase-firestore.js"></script>
+    <script src="/__/firebase/init.js"></script>
+</head>
+<body class="bg-gray-900 text-white p-8">
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-3xl font-bold mb-2">Museum Icons Editor</h1>
+        <p class="text-gray-400 mb-8">View, edit, and update Firestore data for each museum icon.</p>
+        <div id="icons-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+            <!-- Editor cards will be loaded here -->
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const db = firebase.firestore();
+            const container = document.getElementById('icons-container');
+
+            const museumData = {
+                "1": { name: "愛媛県美術館", defaultColor: "#235633" },
+                "2": { name: "萬翠荘", defaultColor: "#a97f71" },
+                "3": { name: "坂の上の雲ミュージアム", defaultColor: "#7bc6fa" },
+                "4": { name: "子規記念博物館", defaultColor: "#7c4846" },
+                "5": { name: "道後公園 湯築城跡", defaultColor: "#d58e53" },
+                "6": { name: "ミウラート・ヴィレッジ", defaultColor: "#a6373e" },
+                "7": { name: "セキ美術館", defaultColor: "#e5d6cd" },
+                "8": { name: "秋山兄弟生誕地", defaultColor: "#fba9ab" },
+                "9": { name: "二之丸史跡庭園", defaultColor: "#1c2d70" },
+                "10": { name: "愛媛大学ミュージアム", defaultColor: "#aea356" }
+            };
+
+            // Create placeholders for all museums to maintain order
+            for (const id in museumData) {
+                const card = document.createElement('div');
+                card.id = `card-${id}`;
+                card.className = 'bg-gray-800 rounded-lg shadow-lg p-5 flex flex-col transition-all duration-300 border-2 border-transparent';
+                card.innerHTML = `<h2 class="text-xl font-semibold mb-4 text-gray-400">${museumData[id].name} (ID: ${id})</h2><p class="text-gray-500">Loading...</p>`;
+                container.appendChild(card);
+            }
+
+            db.collection("museumIcons").onSnapshot(querySnapshot => {
+                querySnapshot.forEach((doc) => {
+                    renderEditorCard(doc);
+                });
+            }, error => {
+                console.error("Error fetching collection: ", error);
+                container.innerHTML = `<p class="text-red-400 col-span-full">Error loading icons: ${error.message}</p>`;
+            });
+
+            function renderEditorCard(doc) {
+                const docId = doc.id;
+                const iconData = doc.data() || {};
+                const card = document.getElementById(`card-${docId}`);
+                if (!card) return;
+
+                const currentBgColor = iconData.backgroundColor || museumData[docId].defaultColor;
+
+                card.innerHTML = `
+                    <h2 class="text-xl font-semibold mb-4">${museumData[docId].name} <span class="text-sm text-gray-500 font-mono">(ID: ${docId})</span></h2>
+                    <div class="flex gap-4 items-start">
+                        <div class="flex-shrink-0">
+                            <p class="text-xs text-gray-400 mb-1">Preview</p>
+                            <div id="preview-${docId}" class="w-24 h-24 rounded-full flex items-center justify-center shadow-inner" style="background-color: ${currentBgColor};">
+                                ${iconData.svgContent || ''}
+                            </div>
+                        </div>
+                        <div class="flex-grow min-w-0">
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-300 mb-1">Background Color</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="color" id="colorPicker-${docId}" value="${currentBgColor}" class="p-0 border-none w-10 h-10 rounded-md cursor-pointer">
+                                    <input type="text" id="bgColor-${docId}" value="${currentBgColor}" class="flex-grow bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label for="svg-${docId}" class="block text-sm font-medium text-gray-300 mb-1">SVG Content</label>
+                                <textarea id="svg-${docId}" rows="4" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-xs font-mono focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">${iconData.svgContent || ''}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex justify-end">
+                        <button id="save-${docId}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md text-sm transition-colors">Save Changes</button>
+                    </div>
+                `;
+
+                // --- Real-time Preview & Sync Logic --- 
+                const bgColorInput = card.querySelector(`#bgColor-${docId}`);
+                const colorPicker = card.querySelector(`#colorPicker-${docId}`);
+                const svgTextarea = card.querySelector(`#svg-${docId}`);
+                const previewDiv = card.querySelector(`#preview-${docId}`);
+
+                // Sync color picker -> text input & preview
+                colorPicker.addEventListener('input', () => {
+                    const newColor = colorPicker.value;
+                    bgColorInput.value = newColor;
+                    previewDiv.style.backgroundColor = newColor;
+                });
+
+                // Sync text input -> color picker & preview
+                bgColorInput.addEventListener('input', () => {
+                    const newColor = bgColorInput.value;
+                    previewDiv.style.backgroundColor = newColor;
+                    // Update color picker only if the format is a valid hex
+                    if (/^#[0-9a-f]{6}$/i.test(newColor)) {
+                        colorPicker.value = newColor;
+                    }
+                });
+
+                svgTextarea.addEventListener('input', () => {
+                    previewDiv.innerHTML = svgTextarea.value;
+                });
+
+                // --- Save Logic --- 
+                const saveButton = card.querySelector(`#save-${docId}`);
+                saveButton.addEventListener('click', () => {
+                    const newBgColor = bgColorInput.value;
+                    const newSvgContent = svgTextarea.value;
+
+                    const dataToUpdate = {
+                        backgroundColor: newBgColor,
+                        svgContent: newSvgContent
+                    };
+                    
+                    card.classList.remove('border-green-500', 'border-red-500');
+                    card.classList.add('border-yellow-500'); // Indicate loading
+
+                    db.collection('museumIcons').doc(docId).set(dataToUpdate, { merge: true })
+                        .then(() => {
+                            console.log(`Document ${docId} successfully updated.`);
+                            card.classList.remove('border-yellow-500');
+                            card.classList.add('border-green-500'); // Success feedback
+                        })
+                        .catch(error => {
+                            console.error("Error updating document: ", error);
+                            card.classList.remove('border-yellow-500');
+                            card.classList.add('border-red-500'); // Error feedback
+                        });
+                });
+            }
+        });
+    </script>
+</body>
+</html>

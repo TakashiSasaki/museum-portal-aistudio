@@ -1,0 +1,30 @@
+{
+  "name": "愛媛大学ミュージアムポータルサイト",
+  "short_name": "愛大ミュージアム",
+  "id": "https://portal.museum.ehime-u.ac.jp/",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050510",
+  "theme_color": "#050510",
+  "description": "愛媛大学ミュージアムのポータルサイトです。",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "name": "museum-portal",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "build": "node --test test-static-integrity.cjs",
+    "lint": "eslint server.js"
+  },
+  "devDependencies": {
+    "firebase": "^12.11.0",
+    "firebase-admin": "^13.7.0",
+    "playwright": "^1.60.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.1.0",
+    "express": "^5.2.1",
+    "firebase-tools": "^15.12.0",
+    "globals": "^17.4.0"
+  }
+}

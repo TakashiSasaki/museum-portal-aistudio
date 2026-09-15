@@ -1,0 +1,800 @@
+        /* プレビュー時の余白と背景設定 */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #333;
+            /* プレビュー用の暗い背景 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+        }
+
+        /* サイネージ画面のラッパー（9:16のアスペクト比を維持） */
+        .screen-wrapper {
+            /* コンテナクエリの基準を設定 */
+            container-type: inline-size;
+
+            aspect-ratio: 9 / 16;
+            height: 100vh;
+            max-width: 100vw;
+            background-color: #fff;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        /* 上中下の各フレーム（3等分） */
+        .frame {
+            display: flex;
+            flex-direction: column;
+            border-bottom: 2px solid #ccc;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .frame:last-child {
+            border-bottom: none;
+        }
+
+        /* =========================================
+           タイトル表示
+           ========================================= */
+        .title-frame {
+            background-color: #822280;
+            /* 愛媛大学のスクールカラー */
+            color: #ffffff;
+            text-align: center;
+            padding: 3cqw 0;
+            border-bottom: 2px solid #ccc;
+            flex-shrink: 0;
+            /* 高さを圧縮しない */
+        }
+
+        .title-frame h1 {
+            margin: 0;
+            font-size: 4.5cqw;
+            letter-spacing: 0.5cqw;
+            white-space: nowrap;
+        }
+
+        /* =========================================
+           上フレーム：時刻表示
+           ========================================= */
+        .top-frame {
+            flex: 0.525;
+            /* 高さを70%程度に縮小 */
+            background-color: #1a1a1a;
+            color: #ffffff;
+            justify-content: center;
+            align-items: center;
+            padding-top: 3cqw;
+            /* タブ用の余白を少し縮小 */
+        }
+
+        /* 時計・ストップウォッチ・タイマーの切り替えタブ */
+        .top-nav {
+            position: absolute;
+            top: 1cqw;
+            display: flex;
+            gap: 2cqw;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .top-nav button {
+            background: rgba(50, 50, 50, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-bottom: 3px solid rgba(255, 255, 255, 0.4);
+            /* 立体感のための下線 */
+            border-radius: 6px;
+            padding: 0.8cqw 1.8cqw;
+            font-size: 2.2cqw;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.1s ease-in-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            /* ドロップシャドウ */
+        }
+
+        /* 押したときのへこみ効果 */
+        .top-nav button:active {
+            transform: translateY(2px);
+            border-bottom-width: 1px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 時計タブの色設定 */
+        .nav-btn[data-target="mode-clock"] {
+            color: rgba(255, 182, 193, 0.8);
+            border-color: rgba(255, 182, 193, 0.3);
+        }
+
+        .nav-btn[data-target="mode-clock"].active {
+            color: #ffb6c1;
+            border-color: #ffb6c1;
+            background: rgba(255, 182, 193, 0.2);
+            border-bottom-width: 1px;
+            transform: translateY(2px);
+            /* 選択中はへこんだまま */
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.6);
+            /* 選択中のインセットシャドウ */
+        }
+
+        /* ストップウォッチタブの色設定 (明るい水色) */
+        .nav-btn[data-target="mode-stopwatch"] {
+            color: rgba(0, 229, 255, 0.8);
+            border-color: rgba(0, 229, 255, 0.3);
+        }
+
+        .nav-btn[data-target="mode-stopwatch"].active {
+            color: #00e5ff;
+            border-color: #00e5ff;
+            background: rgba(0, 229, 255, 0.15);
+            border-bottom-width: 1px;
+            transform: translateY(2px);
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.6);
+        }
+
+        /* タイマータブの色設定 (明るい黄色) */
+        .nav-btn[data-target="mode-timer"] {
+            color: rgba(255, 234, 0, 0.8);
+            border-color: rgba(255, 234, 0, 0.3);
+        }
+
+        .nav-btn[data-target="mode-timer"].active {
+            color: #ffea00;
+            border-color: #ffea00;
+            background: rgba(255, 234, 0, 0.15);
+            border-bottom-width: 1px;
+            transform: translateY(2px);
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.6);
+        }
+
+        /* 稼働中のカッコいいアニメーション（ストップウォッチ用：水色） */
+        @keyframes swRunningGlow {
+            0% {
+                box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.6), 0 0 5px #00e5ff, inset 0 0 5px #00e5ff;
+                border-color: #00e5ff;
+                color: #00e5ff;
+                text-shadow: 0 0 5px #00e5ff;
+            }
+
+            50% {
+                box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.6), 0 0 15px #00e5ff, inset 0 0 10px #00e5ff;
+                border-color: #88ffff;
+                color: #ffffff;
+                text-shadow: 0 0 10px #00e5ff;
+            }
+
+            100% {
+                box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.6), 0 0 5px #00e5ff, inset 0 0 5px #00e5ff;
+                border-color: #00e5ff;
+                color: #00e5ff;
+                text-shadow: 0 0 5px #00e5ff;
+            }
+        }
+
+        .nav-btn[data-target="mode-stopwatch"].is-running {
+            animation: swRunningGlow 1.5s infinite alternate;
+        }
+
+        .nav-btn[data-target="mode-stopwatch"].active.is-running {
+            background-color: rgba(0, 229, 255, 0.2);
+        }
+
+        /* 稼働中のカッコいいアニメーション（タイマー用：黄色） */
+        @keyframes timerRunningGlow {
+            0% {
+                box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.6), 0 0 5px #ffea00, inset 0 0 5px #ffea00;
+                border-color: #ffea00;
+                color: #ffea00;
+                text-shadow: 0 0 5px #ffea00;
+            }
+
+            50% {
+                box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.6), 0 0 15px #ffea00, inset 0 0 10px #ffea00;
+                border-color: #ffff88;
+                color: #ffffff;
+                text-shadow: 0 0 10px #ffea00;
+            }
+
+            100% {
+                box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.6), 0 0 5px #ffea00, inset 0 0 5px #ffea00;
+                border-color: #ffea00;
+                color: #ffea00;
+                text-shadow: 0 0 5px #ffea00;
+            }
+        }
+
+        .nav-btn[data-target="mode-timer"].is-running {
+            animation: timerRunningGlow 1.5s infinite alternate;
+        }
+
+        .nav-btn[data-target="mode-timer"].active.is-running {
+            background-color: rgba(255, 234, 0, 0.2);
+        }
+
+        /* 各機能のコンテナ */
+        .top-mode-content {
+            display: none;
+            /* デフォルト非表示 */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .top-mode-content.active {
+            display: flex;
+            /* activeなものだけ表示 */
+        }
+
+        .clock-date {
+            font-size: 4cqw;
+            /* 高さに合わせて調整 */
+            margin-bottom: 1.5cqw;
+            letter-spacing: 0.5cqw;
+        }
+
+        /* 時間表示の共通グループ（時・分・秒を分ける） */
+        .time-display-group {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+        }
+
+        .time-num {
+            font-size: 14cqw;
+            /* 高さに合わせて調整 */
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            line-height: 1;
+            letter-spacing: 0.5cqw;
+        }
+
+        .time-unit {
+            font-size: 3cqw;
+            /* 高さに合わせて調整 */
+            font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            color: #aaa;
+            margin-left: 0.5cqw;
+            margin-right: 1.5cqw;
+            font-weight: normal;
+            letter-spacing: normal;
+        }
+
+        /* =========================================
+           時計用レイアウトと文字色設定
+           ========================================= */
+        #mode-clock .time-num,
+        #mode-clock .clock-date {
+            color: #ffb6c1;
+        }
+
+        #mode-clock .time-unit {
+            color: rgba(255, 182, 193, 0.7);
+        }
+
+        /* =========================================
+           ストップウォッチ用レイアウトと文字色設定
+           ========================================= */
+        #stopwatch-display {
+            display: flex;
+            align-items: baseline;
+            /* ベースライン合わせで表示 */
+            justify-content: center;
+        }
+
+        .sw-ms {
+            font-size: 6cqw;
+            /* ミリ秒は小さく表示 */
+        }
+
+        #mode-stopwatch .time-num,
+        #mode-stopwatch .sw-ms {
+            color: #00e5ff;
+        }
+
+        #mode-stopwatch .time-unit {
+            color: rgba(0, 229, 255, 0.7);
+        }
+
+        /* =========================================
+           タイマー用レイアウトと文字色設定
+           ========================================= */
+        #mode-timer .time-num,
+        #mode-timer .time-display-val {
+            color: #ffea00;
+        }
+
+        #mode-timer .time-unit,
+        #mode-timer .timer-unit-setup {
+            color: rgba(255, 234, 0, 0.7);
+        }
+
+        /* 制御ボタン (スタート・リセット等) の基本スタイル */
+        .control-btns {
+            display: flex;
+            gap: 4cqw;
+            margin-top: 2cqw;
+        }
+
+        .control-btns button {
+            font-size: 3cqw;
+            padding: 1cqw 3cqw;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-bottom-width: 3px;
+            /* 立体感 */
+            border-radius: 6px;
+            font-weight: bold;
+            transition: all 0.1s ease-in-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+        }
+
+        .control-btns button:active {
+            transform: translateY(2px);
+            border-bottom-width: 1px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        /* ストップウォッチのボタン色設定 (水色) */
+        #mode-stopwatch .control-btns button {
+            background: rgba(0, 229, 255, 0.15);
+            color: #00e5ff;
+            border-color: rgba(0, 229, 255, 0.4);
+            border-bottom-color: rgba(0, 229, 255, 0.8);
+        }
+
+        #mode-stopwatch .control-btns button:hover {
+            background: rgba(0, 229, 255, 0.25);
+        }
+
+        /* タイマーのボタン色設定 (黄色) */
+        #mode-timer .control-btns button {
+            background: rgba(255, 234, 0, 0.15);
+            color: #ffea00;
+            border-color: rgba(255, 234, 0, 0.4);
+            border-bottom-color: rgba(255, 234, 0, 0.8);
+        }
+
+        #mode-timer .control-btns button:hover {
+            background: rgba(255, 234, 0, 0.25);
+        }
+
+        /* タイマー設定UI（上下矢印方式） */
+        .timer-setup {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1cqw;
+        }
+
+        .timer-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .timer-col button {
+            background: transparent;
+            color: rgba(255, 234, 0, 0.6);
+            /* 矢印ボタンの初期色を黄色に合わせる */
+            border: none;
+            font-size: 4.5cqw;
+            padding: 0;
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .timer-col button:hover {
+            color: #ffea00;
+        }
+
+        .time-display-val {
+            font-size: 14cqw;
+            /* 数字を少し調整 */
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            line-height: 1;
+            letter-spacing: 0.5cqw;
+        }
+
+        .timer-unit-setup {
+            font-size: 4.5cqw;
+            font-weight: bold;
+            color: #aaa;
+            margin: 0 2cqw 0 0.5cqw;
+            align-self: flex-end;
+            margin-bottom: 2.5cqw;
+        }
+
+        /* タイマー終了時の点滅アラーム */
+        @keyframes timerBlink {
+            0% {
+                color: #ff4444;
+            }
+
+            50% {
+                color: #ffffff;
+            }
+
+            100% {
+                color: #ff4444;
+            }
+        }
+
+        .timer-end {
+            animation: timerBlink 1s infinite;
+        }
+
+        /* =========================================
+           中フレーム：カレンダー表示
+           ========================================= */
+        .middle-frame {
+            flex: 1.125;
+            /* 余裕を持たせる */
+            padding: 2cqw;
+            box-sizing: border-box;
+            background-color: #fafafa;
+            display: none;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5cqw;
+        }
+
+        .calendar-header h2 {
+            font-size: 6cqw;
+            margin: 0;
+            color: #333;
+        }
+
+        .calendar-header button {
+            font-size: 4cqw;
+            padding: 1cqw 3cqw;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            background: #fff;
+            border-radius: 4px;
+        }
+
+        .calendar-header button:hover {
+            background: #eee;
+        }
+
+        .calendar-table {
+            width: 100%;
+            flex: 1;
+            table-layout: fixed;
+            border-collapse: collapse;
+        }
+
+        .calendar-table th {
+            font-size: 2cqw;
+            background-color: #e0e0e0;
+            border: 1px solid #ccc;
+            padding: 0.5cqw;
+            text-align: center;
+        }
+
+        .calendar-table td {
+            border: 1px solid #ccc;
+            vertical-align: top;
+            padding: 0.5cqw;
+            background: #fff;
+        }
+
+        .calendar-table .date-num {
+            font-size: 2.2cqw;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .calendar-table td.today {
+            background-color: #fff3e0;
+            /* 今日の背景色 */
+        }
+
+        .calendar-table td.today .date-num {
+            color: #d32f2f;
+        }
+
+        .calendar-table .date-events {
+            font-size: 1.8cqw;
+            /* イベント名の文字を小さめに */
+            color: #444;
+            margin-top: 0.2cqw;
+            word-break: break-all;
+            line-height: 1.2;
+            display: flex;
+            flex-direction: column;
+            gap: 0.2cqw;
+        }
+
+        .event-item {
+            background-color: #e0f2f1;
+            /* タイトルバーに合わせた薄い緑の背景 */
+            padding: 0.2cqw 0.4cqw;
+            border-radius: 2px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            /* 長い場合は2行で省略 */
+            -webkit-box-orient: vertical;
+        }
+
+        /* =========================================
+           下フレーム：お知らせ
+           ========================================= */
+        .bottom-frame {
+            flex: 1;
+            /* 余裕を持たせる */
+            background-color: #ffffff;
+        }
+
+        /* フッターフレーム：QRコード（横置き） */
+        .footer-frame {
+            flex: 0.2; /* 高さを抑える */
+            background-color: #f1f3f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-top: 2px solid #ccc;
+            padding: 1cqw 0;
+        }
+
+        .qr-wrapper-horizontal {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 4cqw;
+            height: 100%;
+        }
+
+        .qr-wrapper-horizontal img {
+            height: 100%;
+            max-height: 20cqw;
+            object-fit: contain;
+        }
+
+        .qr-text {
+            font-size: 2.8cqw;
+            color: #333;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+
+        /* お知らせエリア */
+        .notice-wrapper {
+            flex: 1;
+            padding: 3cqw;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            /* スクロールを禁止し、フレーム内に収める */
+        }
+
+        /* スクロールバーの非表示（サイネージ用） */
+        .notice-wrapper::-webkit-scrollbar {
+            display: none;
+        }
+
+        .notice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #1a1a1a;
+            margin-bottom: 1cqw;
+            padding-bottom: 1cqw;
+        }
+
+        .notice-tabs {
+            display: flex;
+            gap: 1cqw;
+        }
+
+        .notice-tab-btn {
+            font-size: 2.5cqw;
+            padding: 0.5cqw 2cqw;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            background: #fff;
+            border-radius: 4px;
+            color: #666;
+            font-weight: normal;
+        }
+
+        .notice-tab-btn.active {
+            background: #333;
+            color: #fff;
+            border-color: #333;
+            font-weight: bold;
+        }
+
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 2cqw;
+        }
+
+        .pagination-controls button {
+            font-size: 3.5cqw;
+            padding: 0.5cqw 2cqw;
+            cursor: pointer;
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        #notice-page-indicator {
+            font-size: 3.5cqw;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .notice-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            flex: 1;
+            /* 残りの高さをすべてリストに割り当てる */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .notice-list li {
+            flex: none;
+            /* 5件のアイテムで高さを均等に分割 */
+            min-height: 0;
+            /* 縮小を許可 */
+            border-bottom: 1px dashed #ccc;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            /* 縦方向中央揃え */
+            padding: 1.5cqw 0;
+        }
+
+        .notice-list .notice-date {
+            font-size: 2.2cqw;
+            color: #777;
+            margin-bottom: 0.2cqw;
+            /* 余白を少し詰める */
+            display: flex;
+            align-items: center;
+            gap: 1cqw;
+            flex-wrap: wrap;
+        }
+
+        .notice-badge.exclusive {
+            display: inline-block;
+            font-size: 1.6cqw;
+            padding: 0.15cqw 0.7cqw;
+            border-radius: 4px;
+            background-color: #e67e22;
+            color: #fff;
+            font-weight: bold;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+
+        .type-badge {
+            display: inline-block;
+            font-size: 1.6cqw;
+            padding: 0.15cqw 0.7cqw;
+            border-radius: 4px;
+            color: #fff;
+            font-weight: bold;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+            vertical-align: middle;
+            margin-right: 1cqw;
+        }
+
+        .type-badge.type-event { background-color: #3498db; }
+        .type-badge.type-workshop { background-color: #e67e22; }
+        .type-badge.type-exhibition { background-color: #2ecc71; }
+        .type-badge.type-other { background-color: #95a5a6; }
+
+        .notice-list .notice-text {
+            font-size: 2.8cqw;
+            /* 少し小さめに調整 */
+            color: #333;
+            font-weight: 500;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            /* 2行以上になる場合は省略記号(...)を表示 */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .notice-past-content {
+            display: flex;
+            margin-top: 1cqw;
+            gap: 2cqw;
+            font-size: 2.2cqw;
+            color: #555;
+        }
+
+        .notice-past-image {
+            width: 15cqw;
+            height: 10cqw;
+            object-fit: cover;
+            border-radius: 4px;
+            flex-shrink: 0;
+            background-color: #f0f0f0;
+        }
+
+        .notice-past-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5cqw;
+            overflow: hidden;
+        }
+
+        .notice-past-organizer {
+            font-weight: bold;
+            font-size: 2cqw;
+            color: #777;
+        }
+
+        .notice-past-excerpt {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.4;
+        }
+
+
+        /* イベント開始前アラート */
+        .upcoming-event-alert {
+            margin-top: 2cqw;
+            padding: 1.5cqw 2cqw;
+            background-color: transparent;
+            color: #ffecb3;
+            border: 2px solid rgba(255, 152, 0, 0.6);
+            border-radius: 8px;
+            font-size: 2.9cqw;
+            line-height: 1.4;
+            font-weight: bold;
+            text-align: center;
+            width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+            animation: pulseAlert 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulseAlert {
+            0% { 
+                box-shadow: 0 0 10px rgba(255, 152, 0, 0.4), inset 0 0 10px rgba(255, 152, 0, 0.2); 
+                text-shadow: 0 0 5px rgba(255, 152, 0, 0.6), 0 0 10px rgba(255, 152, 0, 0.4);
+            }
+            50% { 
+                box-shadow: 0 0 30px rgba(255, 152, 0, 1), inset 0 0 20px rgba(255, 152, 0, 0.8); 
+                text-shadow: 0 0 15px rgba(255, 200, 0, 1), 0 0 30px rgba(255, 152, 0, 0.8), 0 0 40px rgba(255, 80, 0, 0.6);
+            }
+            100% { 
+                box-shadow: 0 0 10px rgba(255, 152, 0, 0.4), inset 0 0 10px rgba(255, 152, 0, 0.2); 
+                text-shadow: 0 0 5px rgba(255, 152, 0, 0.6), 0 0 10px rgba(255, 152, 0, 0.4);
+            }
+        }
+
