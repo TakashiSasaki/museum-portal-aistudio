@@ -68,8 +68,11 @@
     }
 
     function installBoundedFetch() {
+        if (typeof window === 'undefined' || typeof window.fetch !== 'function') {
+            return;
+        }
         const nativeFetch = window.fetch.bind(window);
-        window.fetch = function boundedImagineDeckFetch(input, init = undefined) {
+        const boundedFetch = function boundedImagineDeckFetch(input, init = undefined) {
             let request;
             try {
                 request = input instanceof Request ? new Request(input, init) : new Request(input, init);
@@ -95,6 +98,20 @@
             return nativeFetch(request, { signal: composed.signal })
                 .finally(composed.cleanup);
         };
+        try {
+            Object.defineProperty(window, 'fetch', {
+                value: boundedFetch,
+                writable: true,
+                configurable: true,
+                enumerable: true
+            });
+        } catch (e) {
+            try {
+                window.fetch = boundedFetch;
+            } catch (err) {
+                console.warn('[ImagineDeck] Could not override window.fetch:', err);
+            }
+        }
         window.__IMAGINEDECK_BOUNDED_FETCH_VERSION__ = 2;
     }
 

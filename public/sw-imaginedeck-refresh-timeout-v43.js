@@ -94,7 +94,7 @@
     };
   }
 
-  self.fetch = function fetchWithImagineDeckTimeout(input, init = undefined) {
+  const customFetch = function fetchWithImagineDeckTimeout(input, init = undefined) {
     const { request, isAtomic } = atomicRequestInfo(input);
     if (!isAtomic) {
       return baseFetch(input, init);
@@ -109,6 +109,20 @@
     return baseFetch(input, { ...(init || {}), signal: composed.signal })
       .finally(composed.cleanup);
   };
+  try {
+    Object.defineProperty(self, 'fetch', {
+      value: customFetch,
+      writable: true,
+      configurable: true,
+      enumerable: true
+    });
+  } catch (error) {
+    try {
+      self.fetch = customFetch;
+    } catch (err) {
+      console.warn('[ImagineDeck SW] Could not override self.fetch:', err);
+    }
+  }
 
   async function readV36ActiveGenerationResponse(request) {
     const pointerCache = await caches.open(V36_POINTER_CACHE_NAME);
