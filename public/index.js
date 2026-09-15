@@ -288,6 +288,23 @@ if (adminTrigger) {
   });
 }
 
+// Header Action Buttons (Bookmarks & Archives)
+const bookmarksBtn = document.getElementById('header-bookmarks-button');
+if (bookmarksBtn) {
+  bookmarksBtn.addEventListener('click', () => {
+    // Custom event or interaction point for bookmarks
+    console.log('[Portal] Bookmarks clicked');
+  });
+}
+
+const archivesBtn = document.getElementById('header-archives-button');
+if (archivesBtn) {
+  archivesBtn.addEventListener('click', () => {
+    // Custom event or interaction point for archives
+    console.log('[Portal] Archives clicked');
+  });
+}
+
 
 // --- PWA Install Button Logic ---
 function initPwaInstallButton() {

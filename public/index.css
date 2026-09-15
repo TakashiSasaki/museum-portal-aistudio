@@ -173,6 +173,77 @@ body {
     }
 }
 
+/* --- Header Action Buttons (Bookmarks & Archives) --- */
+.header-action-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.875rem;
+    border-radius: 9999px;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(51, 65, 85, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: #cbd5e1;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.25;
+    letter-spacing: 0.025em;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    white-space: nowrap;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+}
+
+.header-action-button:hover {
+    background: rgba(30, 41, 59, 0.85);
+    border-color: rgba(103, 232, 249, 0.6);
+    color: #a5f3fc;
+    box-shadow: 0 0 10px rgba(103, 232, 249, 0.25);
+}
+
+.header-action-button:active {
+    transform: translateY(1px) scale(0.97);
+    background: rgba(15, 28, 48, 0.85);
+    border-color: #67e8f9;
+}
+
+.header-action-button:focus-visible {
+    outline: 2px solid #67e8f9;
+    outline-offset: 2px;
+}
+
+@media (min-width: 640px) {
+    .header-action-button {
+        padding: 0.375rem 1.125rem;
+        font-size: 12px;
+        gap: 0.5rem;
+    }
+}
+
+@media (max-height: 520px) {
+    .header-quick-actions {
+        margin-top: 0.25rem !important;
+    }
+    .header-action-button {
+        padding: 0.125rem 0.625rem;
+        font-size: 10px;
+    }
+}
+
+#header-bookmarks-button > span {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 16px;
+}
+
+#header-archives-button > span {
+    font-family: "Times New Roman", Times, serif;
+}
+
 /* --- ダーク・グラスモーフィズムのカード --- */
 .cosmic-card {
     position: relative;

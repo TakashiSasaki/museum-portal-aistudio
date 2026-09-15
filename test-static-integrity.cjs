@@ -114,6 +114,18 @@ test('public/index.html top-page structural and responsive contract', () => {
         !html.includes('title="管理者ツール'),
         'admin-trigger-button must not have a title balloon attribute'
     );
+    assert.ok(
+        html.includes('id="header-bookmarks-button"'),
+        'index.html header must contain #header-bookmarks-button'
+    );
+    assert.ok(
+        html.includes('id="header-archives-button"'),
+        'index.html header must contain #header-archives-button'
+    );
+    assert.ok(
+        html.includes('Bookmarks') && html.includes('Archives'),
+        'index.html header must contain Bookmarks and Archives labels'
+    );
 
     // Grid responsive classes contract
     assert.ok(html.includes('grid-cols-2'), 'portal grid must specify grid-cols-2 for portrait');

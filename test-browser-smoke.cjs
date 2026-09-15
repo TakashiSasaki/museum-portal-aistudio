@@ -72,6 +72,14 @@ async function runBrowserSmoke() {
         assert.ok(adminBtn, '#admin-trigger-button must be present');
         assert.ok(await adminBtn.isVisible(), '#admin-trigger-button must be visible in portrait');
 
+        const bookmarksBtn = await page.$('#header-bookmarks-button');
+        assert.ok(bookmarksBtn, '#header-bookmarks-button must be present');
+        assert.ok(await bookmarksBtn.isVisible(), '#header-bookmarks-button must be visible in portrait');
+
+        const archivesBtn = await page.$('#header-archives-button');
+        assert.ok(archivesBtn, '#header-archives-button must be present');
+        assert.ok(await archivesBtn.isVisible(), '#header-archives-button must be visible in portrait');
+
         // Check 8 portal cards
         logStep('portrait', 'checking card geometry');
         const cards = await page.$$('[data-slot]');
