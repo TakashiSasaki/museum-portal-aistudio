@@ -50,6 +50,7 @@ test('Relevant JavaScript and Service Worker scripts have valid syntax', () => {
         'test-imaginedeck-fullscreen-guard.cjs',
         'test-static-integrity.cjs',
         'test-browser-smoke.cjs',
+        'test-server.cjs',
         'test-sw.cjs'
     ].map(f => path.join(ROOT, f)).filter(f => fs.existsSync(f));
 

@@ -156,3 +156,25 @@ TakashiSasaki/museum-portal
 refs/tags/aistudio-init
 05603220b2dad79cae15c40ddcebcc69d9e62ba7
 ```
+
+## Post-import normalization
+
+インポート後に残存していた repository/CI/tooling の不整合を解消するため、以下の正規化を実施しました。
+
+1. **ブランチの正規化**:
+   - 本リポジトリ（`TakashiSasaki/museum-portal-aistudio`）のカノニカルブランチを `main` に一本化。
+   - CI 設定（`site-ci.yml`）の trigger を `main`（PR および push）へ更新。
+2. **パッケージマネージャーの正規化 (Bun)**:
+   - `bun.lock` を単一の lockfile として採用し、`package-lock.json` の欠落による CI 失敗を解消。
+   - CI およびローカル検証において `bun install --frozen-lockfile` を採用し、再現性のある依存関係解決を確立。
+   - `package.json` のスクリプトを整備（`test:static`, `test:imaginedeck`, `test:server`, `test:browser`, `test`, `lint`）。
+3. **CI/CD の修復・テスト統合**:
+   - `python3 -m http.server` によるブラウザテスト配信を廃止し、本番互換のプレビューサーバー `server.js` を CI で起動して検証。
+   - `/healthz` エンドポイントによる HTTP readiness チェックを導入。
+   - 軽量な ImagineDeck フルスクリーンガードテスト（`test-imaginedeck-fullscreen-guard.cjs`）を `site-ci.yml` に統合し、重複していた `verify-imaginedeck-fullscreen.yml` を整理。
+4. **プレビューサーバー (`server.js`) の堅牢化**:
+   - Firebase SDK バージョンリダイレクト（`/__/firebase/:version/:file`）の汎用化。
+   - Service Worker の no-cache ヘッダー付与の維持と、プレビューサーバー用コントラクトテスト（`test-server.cjs`）の追加。
+5. **デプロイ運用方針の安全化**:
+   - 本番デプロイ権限の移行確認が完了するまで、`.github/workflows/deploy.yml` は手動実行（`workflow_dispatch`）のみに限定。
+   - `FIREBASE_TOKEN` secret の存在確認（preflight）を追加し、トークンベース認証を維持。

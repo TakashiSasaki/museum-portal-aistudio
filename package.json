@@ -6,7 +6,12 @@
     "dev": "node server.js",
     "start": "node server.js",
     "build": "node --test test-static-integrity.cjs",
-    "lint": "eslint server.js"
+    "lint": "eslint server.js",
+    "test:static": "node --test test-static-integrity.cjs",
+    "test:imaginedeck": "node --test test-imaginedeck-fullscreen-guard.cjs",
+    "test:server": "node --test test-server.cjs",
+    "test:browser": "node test-browser-smoke.cjs",
+    "test": "node --test test-static-integrity.cjs test-imaginedeck-fullscreen-guard.cjs test-server.cjs"
   },
   "devDependencies": {
     "firebase": "^12.11.0",

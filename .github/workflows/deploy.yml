@@ -1,9 +1,6 @@
 name: Deploy to Firebase Hosting
 
 on:
-  push:
-    branches:
-      - museum-portal
   workflow_dispatch:
 
 permissions:
@@ -18,33 +15,57 @@ jobs:
     timeout-minutes: 8
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
+
+      - name: Preflight check for FIREBASE_TOKEN
+        run: |
+          if [ -z "${{ secrets.FIREBASE_TOKEN }}" ]; then
+            echo "::error::FIREBASE_TOKEN secret is not set in this repository. Please add FIREBASE_TOKEN to repository secrets before deploying."
+            exit 1
+          fi
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: '22'
-          cache: 'npm'
 
-      - name: Run static integrity contract tests
-        run: node --test test-static-integrity.cjs
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
 
       - name: Install dependencies
-        run: npm ci
+        run: bun install --frozen-lockfile
+
+      - name: Run linter
+        run: bun run lint
+
+      - name: Run static integrity contract tests
+        run: bun run test:static
+
+      - name: Run ImagineDeck fullscreen guard tests
+        run: bun run test:imaginedeck
 
       - name: Install Playwright Chromium
-        run: npx playwright install --with-deps chromium
+        run: bun x playwright install --with-deps chromium
 
-      - name: Start static web server
+      - name: Start preview server
         run: |
-          python3 -m http.server 3000 --directory public &
+          node server.js &
           echo "SERVER_PID=$!" >> $GITHUB_ENV
-          sleep 2
+          for i in {1..30}; do
+            if curl -s -f http://127.0.0.1:3000/healthz > /dev/null 2>&1 || curl -s -f http://127.0.0.1:3000/ > /dev/null 2>&1; then
+              echo "Preview server is ready on port 3000"
+              break
+            fi
+            sleep 0.2
+          done
+
+      - name: Run preview server contract tests
+        run: bun run test:server
 
       - name: Run browser smoke tests
-        run: node test-browser-smoke.cjs
+        run: bun run test:browser
 
-      - name: Stop static web server
+      - name: Stop preview server
         if: always()
         run: |
           if [ -n "$SERVER_PID" ]; then
@@ -53,7 +74,7 @@ jobs:
 
       - name: Upload diagnostic screenshots on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: deployment-smoke-screenshots
           path: diagnostic-screenshots/
@@ -61,6 +82,6 @@ jobs:
           if-no-files-found: ignore
 
       - name: Deploy to Firebase Hosting
-        run: npx --yes firebase-tools deploy --only hosting --token "${{ secrets.FIREBASE_TOKEN }}"
+        run: bun x firebase-tools deploy --only hosting --token "${{ secrets.FIREBASE_TOKEN }}"
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

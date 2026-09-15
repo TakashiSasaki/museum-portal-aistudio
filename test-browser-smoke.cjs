@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { chromium } = require('playwright');
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.TEST_PORT || (process.env.PORT === '8080' ? 3000 : (process.env.PORT || 3000));
 const BASE_URL = process.env.BASE_URL || `http://127.0.0.1:${PORT}/`;
 const ARTIFACT_DIR = process.env.ARTIFACT_DIR || path.join(process.cwd(), 'diagnostic-screenshots');
 

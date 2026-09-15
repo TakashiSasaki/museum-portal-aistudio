@@ -1,15 +1,22 @@
 # Agent Instructions
 
-- `npx` や `npm` が見つからない、またはエラーが発生した場合は、代わりに `bun` を使用してください。
-- 例: `npx http-server` -> `bun x http-server`
+- 本リポジトリ（`TakashiSasaki/museum-portal-aistudio`）における標準パッケージマネージャーは **Bun**（`bun`, `bun x`）です。`bun.lock` を単一の lockfile として管理します。
+- ローカル開発 / プレビューサーバーには `server.js`（ポート 3000）を使用してください（`bun run dev` または `node server.js`）。
+- テスト・検証コマンド:
+  - 静的整合性テスト: `bun run test:static`
+  - ImagineDeck フルスクリーンガードテスト: `bun run test:imaginedeck`
+  - プレビューサーバー検証: `bun run test:server`
+  - ブラウザスモークテスト: `bun run test:browser`
+  - リント: `bun run lint`
+- 本リポジトリの主要開発・カノニカルブランチは **`main`** です。（旧リポジトリ `TakashiSasaki/museum-portal` では `museum-portal` ブランチが利用されていましたが、本リポジトリでは `main` に一本化されています）
 - 本プロジェクトは Firebase Hosting にデプロイされます。
-- デプロイ先のプロジェクト名は `museum-6f112` です。
-- 本番公開用ブランチは `museum-portal` です。
-- GitHub Actions を使用して、`museum-portal` ブランチへのプッシュ時に自動的に Firebase Hosting へデプロイされます。
-- デプロイには `FIREBASE_TOKEN` シークレットが必要です。
-- ローカルからの手動デプロイには `bun x firebase deploy` を使用してください。
+- デプロイ先の Firebase プロジェクト名は `museum-6f112` です。
 - カノニカルドメインは `https://portal.museum.ehime-u.ac.jp/` です。
-- Firebaseのデプロイ時の認証は、当面の間はサービスアカウントキーへの移行は行わず、トークンベースの認証(`FIREBASE_TOKEN`)を継続して使用します。
+- **デプロイ運用方針**:
+  - 本番デプロイ権限の移行確認が完了するまでの間、GitHub Actions による Firebase Hosting デプロイは **手動実行（`workflow_dispatch`）のみ** に設定されています（自動 push デプロイは無効化）。
+  - デプロイには `FIREBASE_TOKEN` シークレットが必要です。
+  - Firebase のデプロイ認証は、当面の間はサービスアカウントキーへの移行は行わず、トークンベースの認証（`FIREBASE_TOKEN`）を継続して使用します。
+  - ローカルからの手動デプロイには `bun x firebase deploy` を使用してください。
 
 ## Design Principles
 
