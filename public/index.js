@@ -233,35 +233,59 @@ if ("serviceWorker" in navigator) {
   });
 }
 
-// Long Press for Admin Access
-const footerTrigger = document.getElementById('footer-trigger');
-if (footerTrigger) {
-  let longPressTimer;
+// Long Press for Admin Access (2-second press on bottom-right tool pictogram)
+const adminTrigger = document.getElementById('admin-trigger-button');
+if (adminTrigger) {
+  let longPressTimer = null;
   const pressDuration = 2000; // 2 seconds
 
   const startPress = () => {
+    if (longPressTimer) return;
+    adminTrigger.classList.add('pressing');
     longPressTimer = setTimeout(() => {
+      adminTrigger.classList.remove('pressing');
+      longPressTimer = null;
       window.location.href = '/admin/';
     }, pressDuration);
   };
 
   const cancelPress = () => {
-    clearTimeout(longPressTimer);
+    if (longPressTimer) {
+      clearTimeout(longPressTimer);
+      longPressTimer = null;
+    }
+    adminTrigger.classList.remove('pressing');
   };
 
   // Mouse events
-  footerTrigger.addEventListener('mousedown', startPress);
-  footerTrigger.addEventListener('mouseup', cancelPress);
-  footerTrigger.addEventListener('mouseleave', cancelPress);
-
-  // Touch events
-  footerTrigger.addEventListener('touchstart', (e) => {
-    // Prevent default context menu on mobiles
-    // e.preventDefault(); 
-    startPress();
+  adminTrigger.addEventListener('mousedown', (e) => {
+    if (e.button === 0) startPress();
   });
-  footerTrigger.addEventListener('touchend', cancelPress);
-  footerTrigger.addEventListener('touchcancel', cancelPress);
+  adminTrigger.addEventListener('mouseup', cancelPress);
+  adminTrigger.addEventListener('mouseleave', cancelPress);
+
+  // Touch events (suppress native context menu / text callouts on long press)
+  adminTrigger.addEventListener('touchstart', (e) => {
+    if (e.cancelable) e.preventDefault();
+    startPress();
+  }, { passive: false });
+  adminTrigger.addEventListener('touchend', cancelPress);
+  adminTrigger.addEventListener('touchcancel', cancelPress);
+
+  // Suppress context menu on long press
+  adminTrigger.addEventListener('contextmenu', (e) => e.preventDefault());
+
+  // Keyboard accessibility (hold Space or Enter for 2 seconds)
+  adminTrigger.addEventListener('keydown', (e) => {
+    if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) {
+      startPress();
+    }
+  });
+  adminTrigger.addEventListener('keyup', (e) => {
+    if (e.key === ' ' || e.key === 'Enter') {
+      cancelPress();
+    }
+  });
 }
 
 

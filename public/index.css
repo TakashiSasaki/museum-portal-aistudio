@@ -100,6 +100,79 @@ body {
     }
 }
 
+/* --- Admin Trigger Button (Bottom-Right Corner) --- */
+.admin-trigger-button {
+    position: fixed;
+    bottom: calc(6px + env(safe-area-inset-bottom));
+    right: calc(6px + env(safe-area-inset-right));
+    z-index: 40;
+    width: 32px;
+    height: 32px;
+    padding: 6px;
+    border-radius: 9999px;
+    background: rgba(15, 20, 35, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.35),
+        inset 0 0 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+}
+
+.admin-trigger-button:hover {
+    background: rgba(25, 30, 50, 0.65);
+    border-color: rgba(103, 232, 249, 0.4);
+    box-shadow:
+        0 6px 16px rgba(0, 0, 0, 0.45),
+        0 0 10px rgba(103, 232, 249, 0.2);
+}
+
+.admin-trigger-button:active,
+.admin-trigger-button.pressing {
+    transform: scale(0.92);
+    background: rgba(15, 28, 48, 0.8);
+    border-color: #67e8f9;
+    box-shadow:
+        0 0 14px rgba(103, 232, 249, 0.5),
+        inset 0 0 8px rgba(103, 232, 249, 0.3);
+}
+
+.admin-trigger-button.pressing {
+    animation: admin-press-pulse 1s infinite alternate;
+}
+
+@keyframes admin-press-pulse {
+    from {
+        box-shadow: 0 0 8px rgba(103, 232, 249, 0.3);
+    }
+    to {
+        box-shadow: 0 0 18px rgba(103, 232, 249, 0.7);
+    }
+}
+
+.admin-trigger-button:focus-visible {
+    outline: 2px solid #67e8f9;
+    outline-offset: 2px;
+}
+
+@media (max-width: 400px) {
+    .admin-trigger-button {
+        bottom: calc(4px + env(safe-area-inset-bottom));
+        right: calc(4px + env(safe-area-inset-right));
+        width: 28px;
+        height: 28px;
+        padding: 5px;
+    }
+}
+
 /* --- ダーク・グラスモーフィズムのカード --- */
 .cosmic-card {
     position: relative;

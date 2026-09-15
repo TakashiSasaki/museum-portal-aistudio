@@ -64,6 +64,14 @@ async function runBrowserSmoke() {
         assert.ok(footer, 'footer must be present');
         assert.ok(await footer.isVisible(), 'footer must be visible');
 
+        const contactLink = await page.$('#footer-contact-link');
+        assert.ok(contactLink, '#footer-contact-link must be present in footer');
+        assert.ok(await contactLink.isVisible(), '#footer-contact-link must be visible');
+
+        const adminBtn = await page.$('#admin-trigger-button');
+        assert.ok(adminBtn, '#admin-trigger-button must be present');
+        assert.ok(await adminBtn.isVisible(), '#admin-trigger-button must be visible in portrait');
+
         // Check 8 portal cards
         logStep('portrait', 'checking card geometry');
         const cards = await page.$$('[data-slot]');
@@ -156,6 +164,10 @@ async function runBrowserSmoke() {
         assert.ok(header && await header.isVisible(), 'header must be visible');
         const footer = await page.$('footer');
         assert.ok(footer && await footer.isVisible(), 'footer must be visible');
+        const contactLink = await page.$('#footer-contact-link');
+        assert.ok(contactLink && await contactLink.isVisible(), '#footer-contact-link must be visible in landscape');
+        const adminBtn = await page.$('#admin-trigger-button');
+        assert.ok(adminBtn && await adminBtn.isVisible(), '#admin-trigger-button must be visible in landscape');
 
         // Verify slogan hidden in landscape
         const slogan = await page.$('.slogan-text');
@@ -257,6 +269,48 @@ async function runBrowserSmoke() {
         logStep('pwa-sw', 'PASS');
     } catch (err) {
         logStep('pwa-sw', `FAIL: ${err.message}`);
+        failureCount++;
+    }
+
+    // --- PHASE 4: Admin Trigger Long-Press Verification ---
+    try {
+        logStep('admin-trigger', 'starting 2-second long-press verification');
+        const context = await browser.newContext({ viewport: { width: 400, height: 800 } });
+        const page = await context.newPage();
+        await page.goto(BASE_URL, { waitUntil: 'load', timeout: 10000 });
+
+        const adminBtn = await page.waitForSelector('#admin-trigger-button', { state: 'visible' });
+        assert.ok(adminBtn, 'Admin trigger button must be present');
+
+        // Test short press: release after 300ms -> should NOT navigate
+        const box = await adminBtn.boundingBox();
+        assert.ok(box, 'Admin trigger button must have a bounding box');
+        const cx = box.x + box.width / 2;
+        const cy = box.y + box.height / 2;
+
+        await page.mouse.move(cx, cy);
+        await page.mouse.down();
+        await page.waitForTimeout(300);
+        await page.mouse.up();
+        await page.waitForTimeout(2200);
+
+        let currentUrl = page.url();
+        assert.ok(!currentUrl.includes('/admin/'), `Short press should not navigate to /admin/, current: ${currentUrl}`);
+
+        // Test long press: hold for 2200ms -> should navigate to /admin/
+        await page.mouse.move(cx, cy);
+        await page.mouse.down();
+        await page.waitForTimeout(2200);
+        await page.mouse.up();
+
+        await page.waitForURL(url => url.pathname.includes('/admin'), { timeout: 5000 });
+        currentUrl = page.url();
+        assert.ok(currentUrl.includes('/admin'), `Long press must navigate to /admin/, got: ${currentUrl}`);
+
+        await context.close();
+        logStep('admin-trigger', 'PASS');
+    } catch (err) {
+        logStep('admin-trigger', `FAIL: ${err.message}`);
         failureCount++;
     }
 
