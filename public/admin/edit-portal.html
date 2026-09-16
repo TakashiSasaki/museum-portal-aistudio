@@ -117,6 +117,7 @@
                             <option value="cyan">Cyan (シアン)</option>
                             <option value="emerald">Emerald (エメラルド)</option>
                             <option value="yellow">Yellow (イエロー)</option>
+                            <option value="amber">Amber (アンバー / 琥珀・ゴールド)</option>
                             <option value="fuchsia">Fuchsia (フクシャ)</option>
                             <option value="rose">Rose (ローズ)</option>
                             <option value="orange">Orange (オレンジ)</option>
@@ -189,6 +190,7 @@
             cyan: { from: 'from-cyan-500', to: 'from-cyan-700', text: 'text-cyan-400' },
             emerald: { from: 'from-emerald-500', to: 'from-emerald-800', text: 'text-emerald-400' },
             yellow: { from: 'from-yellow-400', to: 'from-yellow-600', text: 'text-yellow-400' },
+            amber: { from: 'from-amber-400', to: 'from-amber-600', text: 'text-amber-400' },
             fuchsia: { from: 'from-fuchsia-500', to: 'from-purple-700', text: 'text-fuchsia-400' },
             rose: { from: 'from-rose-500', to: 'from-rose-800', text: 'text-rose-500' },
             orange: { from: 'from-orange-500', to: 'from-orange-700', text: 'text-orange-500' },
@@ -231,6 +233,29 @@
             if (val === '' || val === null || val === undefined) return null;
             const num = parseInt(val, 10);
             return (!isNaN(num) && num >= 1 && num <= 8) ? num : null;
+        }
+
+        // Scopes SVG element IDs (e.g. gradient IDs) to prevent cross-card collisions
+        function scopeSvgIds(svgCode, uniquePrefix) {
+            if (!svgCode || typeof svgCode !== 'string') return '';
+            const idRegex = /\bid=["']([a-zA-Z0-9_-]+)["']/g;
+            const ids = [];
+            let match;
+            while ((match = idRegex.exec(svgCode)) !== null) {
+                if (!ids.includes(match[1])) {
+                    ids.push(match[1]);
+                }
+            }
+            if (ids.length === 0) return svgCode;
+
+            let scopedSvg = svgCode;
+            ids.forEach(id => {
+                const scopedId = `${uniquePrefix}_${id}`;
+                scopedSvg = scopedSvg.replace(new RegExp(`\\bid=["']${id}["']`, 'g'), `id="${scopedId}"`);
+                scopedSvg = scopedSvg.replace(new RegExp(`url\\(#${id}\\)`, 'g'), `url(#${scopedId})`);
+                scopedSvg = scopedSvg.replace(new RegExp(`href=["']#${id}["']`, 'g'), `href="#${scopedId}"`);
+            });
+            return scopedSvg;
         }
 
         // Helper: Sorting weight for card positions
@@ -336,7 +361,7 @@
                     </div>
                     <div class="plasma-sphere bg-gradient-to-br ${color.from} ${color.to} mb-2 sm:mb-3 group-hover:scale-110 transition-transform">
                         <div class="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center text-white">
-                            ${card.svgCode}
+                            ${scopeSvgIds(card.svgCode, 'admin_' + card.id)}
                         </div>
                     </div>
                     <span class="text-[11px] sm:text-xs font-bold text-slate-100 mb-1 leading-snug line-clamp-2 break-words w-full px-1">${card.title || '（名称未設定）'}</span>
@@ -416,7 +441,9 @@
                 }
             }
 
+            // Preserve all existing properties (e.g. isHighlight, metadata, etc.) and only update edited fields
             cards[currentEditingIndex] = {
+                ...cards[currentEditingIndex],
                 id: cards[currentEditingIndex].id, // Preserve ID
                 title: document.getElementById('edit-title').value,
                 url: document.getElementById('edit-url').value,
@@ -483,9 +510,10 @@
                 const writeOperations = [];
 
                 cards.forEach(card => {
-                    // Sanitize card data to ensure Firestore compatibility
+                    // Sanitize card data to ensure Firestore compatibility while preserving custom fields
                     const finalPos = parsePositionValue(card.position);
                     const payload = {
+                        ...card,
                         id: card.id,
                         title: card.title || '',
                         url: card.url || '',
@@ -495,7 +523,7 @@
                     };
 
                     const docRef = db.collection(COLLECTION_NAME).doc(card.id);
-                    writeOperations.push({ type: 'set', docRef, data: payload });
+                    writeOperations.push({ type: 'set', docRef, data: payload, options: { merge: true } });
                 });
 
                 cardsToDelete.forEach(id => {
@@ -509,7 +537,7 @@
 
                     chunk.forEach((operation) => {
                         if (operation.type === 'set') {
-                            batch.set(operation.docRef, operation.data);
+                            batch.set(operation.docRef, operation.data, operation.options || { merge: true });
                         } else if (operation.type === 'delete') {
                             batch.delete(operation.docRef);
                         }

@@ -9,14 +9,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Default configuration mapping for color themes to tailwind classes
     // Some cards use -700, others use -800, we map them as best effort
     const themeMap = {
-        'cyan': { text: 'text-cyan-400', grad: 'from-cyan-500 to-cyan-700' },
-        'emerald': { text: 'text-emerald-400', grad: 'from-emerald-500 to-emerald-800' },
-        'yellow': { text: 'text-yellow-400', grad: 'from-yellow-400 to-yellow-600' },
-        'fuchsia': { text: 'text-fuchsia-400', grad: 'from-fuchsia-500 to-purple-700' },
-        'rose': { text: 'text-rose-500', grad: 'from-rose-500 to-rose-800' },
-        'orange': { text: 'text-orange-500', grad: 'from-orange-500 to-orange-700' },
-        'blue': { text: 'text-blue-500', grad: 'from-blue-500 to-blue-800' },
-        'indigo': { text: 'text-indigo-400', grad: 'from-indigo-500 to-indigo-800' }
+        'cyan': { text: 'text-cyan-400', grad: 'from-cyan-500 to-cyan-700', hex: '#22d3ee', rgb: '34, 211, 238' },
+        'emerald': { text: 'text-emerald-400', grad: 'from-emerald-500 to-emerald-800', hex: '#34d399', rgb: '52, 211, 153' },
+        'yellow': { text: 'text-yellow-400', grad: 'from-yellow-400 to-yellow-600', hex: '#facc15', rgb: '250, 204, 21' },
+        'amber': { text: 'text-amber-400', grad: 'from-amber-400 to-amber-600', hex: '#fbbf24', rgb: '251, 191, 36' },
+        'fuchsia': { text: 'text-fuchsia-400', grad: 'from-fuchsia-500 to-purple-700', hex: '#e879f9', rgb: '232, 121, 249' },
+        'rose': { text: 'text-rose-500', grad: 'from-rose-500 to-rose-800', hex: '#f43f5e', rgb: '244, 63, 94' },
+        'orange': { text: 'text-orange-500', grad: 'from-orange-500 to-orange-700', hex: '#f97316', rgb: '249, 115, 22' },
+        'blue': { text: 'text-blue-500', grad: 'from-blue-500 to-blue-800', hex: '#3b82f6', rgb: '59, 130, 246' },
+        'indigo': { text: 'text-indigo-400', grad: 'from-indigo-500 to-indigo-800', hex: '#818cf8', rgb: '129, 140, 248' }
     };
 
     // Pre-calculate possible classes to remove to avoid expensive Array.from().filter() in loops
@@ -129,6 +130,32 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             badge.classList.add('hidden');
         }
+    }
+
+    // Scopes SVG element IDs (e.g. gradient IDs, clipPath IDs) to avoid cross-card collisions
+    function scopeSvgIds(svgCode, uniquePrefix) {
+        if (!svgCode || typeof svgCode !== 'string') return '';
+        const idRegex = /\bid=["']([a-zA-Z0-9_-]+)["']/g;
+        const ids = [];
+        let match;
+        while ((match = idRegex.exec(svgCode)) !== null) {
+            if (!ids.includes(match[1])) {
+                ids.push(match[1]);
+            }
+        }
+        if (ids.length === 0) return svgCode;
+
+        let scopedSvg = svgCode;
+        ids.forEach(id => {
+            const scopedId = `${uniquePrefix}_${id}`;
+            // Replace definition: id="xyz" or id='xyz'
+            scopedSvg = scopedSvg.replace(new RegExp(`\\bid=["']${id}["']`, 'g'), `id="${scopedId}"`);
+            // Replace url(#xyz)
+            scopedSvg = scopedSvg.replace(new RegExp(`url\\(#${id}\\)`, 'g'), `url(#${scopedId})`);
+            // Replace href="#xyz" or xlink:href="#xyz"
+            scopedSvg = scopedSvg.replace(new RegExp(`href=["']#${id}["']`, 'g'), `href="#${scopedId}"`);
+        });
+        return scopedSvg;
     }
 
     function getCardInfoByIdOrSlot(cardId, slot) {
@@ -484,7 +511,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const theme = themeMap[colorTheme] || themeMap['cyan'];
             const cleanTitle = title.replace(/<br\s*\/?>/gi, ' ');
-            const iconSvg = svgCode && svgCode.trim() ? svgCode : defaultIconSvg;
+            const iconSvg = svgCode && svgCode.trim() ? scopeSvgIds(svgCode, 'hl_' + cardId) : defaultIconSvg;
             const targetUrl = url;
             const isExternal = targetUrl.startsWith('http');
             const isBookmarked = bookmarkedIdSet.has(cardId);
@@ -609,7 +636,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const theme = themeMap[colorTheme] || themeMap['cyan'];
             const cleanTitle = title.replace(/<br\s*\/?>/gi, ' ');
-            const iconSvg = svgCode && svgCode.trim() ? svgCode : defaultIconSvg;
+            const iconSvg = svgCode && svgCode.trim() ? scopeSvgIds(svgCode, 'arch_' + cardId) : defaultIconSvg;
             const targetUrl = url;
             const isExternal = targetUrl.startsWith('http');
             const isBookmarked = bookmarkedIdSet.has(cardId);
@@ -730,7 +757,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const theme = themeMap[colorTheme] || themeMap['cyan'];
             const cleanTitle = title.replace(/<br\s*\/?>/gi, ' ');
-            const iconSvg = svgCode && svgCode.trim() ? svgCode : defaultIconSvg;
+            const iconSvg = svgCode && svgCode.trim() ? scopeSvgIds(svgCode, 'bm_' + cardId) : defaultIconSvg;
             const targetUrl = url;
             const isExternal = targetUrl.startsWith('http');
 
@@ -881,6 +908,8 @@ document.addEventListener('DOMContentLoaded', () => {
         slotElement.classList.remove('visible');
         slotElement.classList.add('default-text-color');
         delete slotElement.dataset.cardId;
+        slotElement.style.removeProperty('--card-glow-color');
+        slotElement.style.removeProperty('--card-glow-rgb');
 
         const btn = slotElement.querySelector('.card-bookmark-btn');
         if (btn) {
@@ -928,6 +957,14 @@ document.addEventListener('DOMContentLoaded', () => {
             slotElement.classList.add('visible');
             slotElement.href = defaultCard.url;
             slotElement.dataset.cardId = defaultCard.id;
+
+            if (defaultCard.colorTheme && themeMap[defaultCard.colorTheme]) {
+                const theme = themeMap[defaultCard.colorTheme];
+                if (theme.hex && theme.rgb) {
+                    slotElement.style.setProperty('--card-glow-color', theme.hex);
+                    slotElement.style.setProperty('--card-glow-rgb', theme.rgb);
+                }
+            }
 
             const btn = slotElement.querySelector('.card-bookmark-btn');
             if (btn) {
@@ -1132,6 +1169,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 existingLink.classList.remove('invisible');
                 existingLink.classList.add('visible');
 
+                // Apply CSS variables for the color theme
+                if (cardData.colorTheme && themeMap[cardData.colorTheme]) {
+                    const theme = themeMap[cardData.colorTheme];
+                    if (theme.hex && theme.rgb) {
+                        existingLink.style.setProperty('--card-glow-color', theme.hex);
+                        existingLink.style.setProperty('--card-glow-rgb', theme.rgb);
+                    }
+                }
+
                 // Update link
                 if (cardData.url) {
                     existingLink.href = cardData.url;
@@ -1151,7 +1197,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Update icon
                 const iconContainer = existingLink.querySelector('.plasma-sphere');
                 if (iconContainer && cardData.svgCode) {
-                    iconContainer.innerHTML = cardData.svgCode;
+                    iconContainer.innerHTML = scopeSvgIds(cardData.svgCode, 'portal_' + docId);
 
                     // Add 'text-white icon-glow' to the svg if not present to match styling
                     const svgElement = iconContainer.querySelector('svg');
