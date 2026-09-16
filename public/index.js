@@ -525,29 +525,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2 mb-0.5 flex-wrap">
                                 <h2 class="text-sm font-medium text-slate-100 group-hover:text-amber-200 transition-colors truncate">${cleanTitle}</h2>
-                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-amber-950/80 text-amber-300 border border-amber-500/40 tracking-wider flex-shrink-0">Highlight</span>
-                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-slate-900/80 text-slate-400 border border-slate-700/50 tracking-wider flex-shrink-0" title="カードID (FirestoreドキュメントID)">ID: ${cardId}</span>
                             </div>
-                            <span class="text-[11px] text-slate-400 truncate block mt-0.5">${targetUrl}</span>
+                            <span class="text-[11px] text-slate-400 line-clamp-3 break-all mt-0.5 leading-snug">${targetUrl}</span>
                         </div>
                     </a>
                     <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-                        <a
-                            href="${targetUrl}"
-                            ${isExternal ? 'target="_blank" rel="noopener noreferrer"' : ''}
-                            class="px-2.5 py-1.5 rounded-lg bg-amber-950/60 hover:bg-amber-900/90 border border-amber-500/40 text-amber-300 hover:text-white text-xs flex items-center gap-1 transition-all cursor-pointer"
-                            title="ページを開く"
-                        >
-                            <span>開く</span>
-                            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                                <polyline points="15 3 21 3 21 9"></polyline>
-                                <line x1="10" y1="14" x2="21" y2="3"></line>
-                            </svg>
-                        </a>
                         <button
                             type="button"
-                            class="highlight-bookmark-btn p-1.5 rounded-lg border transition-all cursor-pointer ${isBookmarked ? 'bg-amber-950/60 border-amber-500/60 text-amber-300' : 'bg-slate-800/70 border-slate-700/60 text-slate-400 hover:text-cyan-300 hover:border-cyan-500/50'}"
+                            class="highlight-bookmark-btn p-1.5 rounded-lg border transition-all cursor-pointer ${isBookmarked ? `bg-${colorTheme}-950/60 border-${colorTheme}-500/60 text-${colorTheme}-300` : `bg-slate-800/70 border-slate-700/60 text-slate-400 hover:text-${colorTheme}-300 hover:border-${colorTheme}-500/50`}"
                             data-card-id="${cardId}"
                             aria-label="${cleanTitle} (ID: ${cardId}) のブックマークを切り替え"
                             title="${isBookmarked ? 'ブックマーク解除' : 'ブックマークに追加'} (ID: ${cardId})"
