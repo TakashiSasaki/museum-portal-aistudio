@@ -58,6 +58,22 @@ test('server delivers top page / with status 200 and expected title', async () =
     assert.ok(html.includes('ミュージアム'), 'Top page HTML should contain "ミュージアム"');
 });
 
+test('server delivers bookmarks SPA page at /bookmarks with status 200', async () => {
+    const res = await fetch(`${BASE_URL}/bookmarks`);
+    assert.equal(res.status, 200);
+    assert.match(res.headers.get('content-type') || '', /text\/html/);
+    const html = await res.text();
+    assert.ok(html.includes('bookmarks-view'), 'Bookmarks route HTML should contain bookmarks-view');
+});
+
+test('server delivers archives SPA page at /archives with status 200', async () => {
+    const res = await fetch(`${BASE_URL}/archives`);
+    assert.equal(res.status, 200);
+    assert.match(res.headers.get('content-type') || '', /text\/html/);
+    const html = await res.text();
+    assert.ok(html.includes('archives-view'), 'Archives route HTML should contain archives-view');
+});
+
 test('server sets no-cache header on /sw.js and /sw-core-v44.js', async () => {
     const swRes = await fetch(`${BASE_URL}/sw.js`);
     assert.equal(swRes.status, 200);

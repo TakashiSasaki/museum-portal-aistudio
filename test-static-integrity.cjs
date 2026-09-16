@@ -51,7 +51,9 @@ test('Relevant JavaScript and Service Worker scripts have valid syntax', () => {
         'test-static-integrity.cjs',
         'test-browser-smoke.cjs',
         'test-server.cjs',
-        'test-sw.cjs'
+        'test-sw.cjs',
+        'test-bookmarks.cjs',
+        'test-archives.cjs'
     ].map(f => path.join(ROOT, f)).filter(f => fs.existsSync(f));
 
     const filesToCheck = [...publicJsFiles, ...rootTestScripts];
@@ -147,6 +149,10 @@ test('public/index.css layout and circular icon contracts', () => {
     assert.ok(
         css.includes('flex-shrink: 0'),
         'index.css must enforce flex-shrink: 0 on plasma-sphere icons'
+    );
+    assert.ok(
+        css.includes('#header-bookmarks-button > svg') && css.includes('drop-shadow'),
+        'index.css must include glow effect drop-shadow for header action button pictograms'
     );
 
     // Responsive grid row contract

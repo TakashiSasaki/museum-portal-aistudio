@@ -17,6 +17,16 @@
           }
         ]
       }
+    ],
+    "rewrites": [
+      {
+        "source": "/bookmarks**",
+        "destination": "/index.html"
+      },
+      {
+        "source": "/archives**",
+        "destination": "/index.html"
+      }
     ]
   },
   "firestore": {

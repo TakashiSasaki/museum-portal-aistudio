@@ -14,6 +14,14 @@ app.get('/healthz', (req, res) => {
   res.status(200).send('OK');
 });
 
+// Serve static assets from public directory
+const publicDir = path.join(__dirname, 'public');
+
+// SPA route for /bookmarks and /archives
+app.get(['/bookmarks', '/bookmarks/', '/archives', '/archives/'], (req, res) => {
+  res.sendFile(path.join(publicDir, 'index.html'));
+});
+
 // Service Worker must always serve with no-cache header
 app.use((req, res, next) => {
   if (req.path === '/sw.js' || req.path.startsWith('/sw-')) {
@@ -33,7 +41,14 @@ app.get('/__/firebase/init.js', (req, res) => {
     if (typeof firebase !== 'undefined') {
       try {
         firebase.initializeApp({
-          projectId: "museum-6f112"
+          apiKey: "AIzaSyAxPUc6ET8mR2rGYNFru8hJuqVB5itDcFk",
+          appId: "1:929760742569:web:6382d8668014487f37edb8",
+          authDomain: "museum-6f112.firebaseapp.com",
+          databaseURL: "",
+          measurementId: "G-GG41MHRR7Q",
+          messagingSenderId: "929760742569",
+          projectId: "museum-6f112",
+          storageBucket: "museum-6f112.firebasestorage.app"
         });
       } catch (e) {
         console.warn('Firebase initialization warning:', e);
@@ -42,8 +57,6 @@ app.get('/__/firebase/init.js', (req, res) => {
   `);
 });
 
-// Serve static assets from public directory
-const publicDir = path.join(__dirname, 'public');
 app.use(express.static(publicDir, {
   extensions: ['html']
 }));

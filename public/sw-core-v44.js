@@ -930,12 +930,28 @@ async function handleApiRequest(request) {
   }
 }
 
+const NAVIGATION_NETWORK_TIMEOUT_MS = 5 * 1000;
+
+async function fetchNavigationWithTimeout(request) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => {
+    controller.abort(new Error(`Navigation request timed out after ${NAVIGATION_NETWORK_TIMEOUT_MS}ms`));
+  }, NAVIGATION_NETWORK_TIMEOUT_MS);
+  try {
+    return await fetch(request, { cache: 'no-cache', signal: controller.signal });
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 async function handleNavigationRequest(request) {
   try {
-    const networkResponse = await fetch(request, { cache: 'no-cache' });
+    const networkResponse = await fetchNavigationWithTimeout(request);
 
-    const cache = await caches.open(CORE_CACHE_NAME);
-    await cache.put(request, networkResponse.clone());
+    if (networkResponse && networkResponse.status === 200) {
+      const cache = await caches.open(CORE_CACHE_NAME);
+      await cache.put(request, networkResponse.clone());
+    }
 
     return networkResponse;
   } catch (error) {
@@ -943,6 +959,17 @@ async function handleNavigationRequest(request) {
     const cachedResponse = await caches.match(request, { ignoreSearch: true });
     if (cachedResponse) {
       return cachedResponse;
+    }
+    try {
+      const reqUrl = new URL(request.url);
+      if (reqUrl.pathname === '/bookmarks' || reqUrl.pathname === '/bookmarks/') {
+        const appShell = (await caches.match('/index.html')) || (await caches.match('/'));
+        if (appShell) {
+          return appShell;
+        }
+      }
+    } catch (e) {
+      // Ignore URL parse error
     }
     return caches.match('/offline.html');
   }

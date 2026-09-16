@@ -27,6 +27,13 @@
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            aspect-ratio: 1 / 1;
+        }
+        @media (max-width: 640px) {
+            .plasma-sphere {
+                width: 2.5rem;
+                height: 2.5rem;
+            }
         }
     </style>
 </head>
@@ -46,36 +53,42 @@
     </div>
 
     <!-- Main Content -->
-    <div id="admin-content" class="hidden-content flex-1 flex flex-col p-6 max-w-6xl mx-auto w-full">
-        <header class="flex justify-between items-center mb-8 pb-4 border-b border-slate-800">
+    <div id="admin-content" class="hidden-content flex-1 flex flex-col p-3 sm:p-6 max-w-6xl mx-auto w-full">
+        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8 pb-4 border-b border-slate-800">
             <div>
-                <h1 class="text-2xl font-bold tracking-tight">ポータルカード編集</h1>
-                <p class="text-slate-400 text-sm">トップページのカード情報を編集・追加・削除します。表示位置(1〜8)を指定してトップページに表示します。</p>
+                <h1 class="text-xl sm:text-2xl font-bold tracking-tight">ポータルカード編集</h1>
+                <p class="text-slate-400 text-xs sm:text-sm mt-0.5">トップページのカード情報を編集・追加・削除します。表示位置(1〜8)を指定してトップページに表示します。</p>
             </div>
-            <div class="flex gap-3">
-                <button id="add-card-btn" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg font-bold transition-all shadow-lg shadow-blue-900/20 text-sm">新規カード追加</button>
-                <button id="save-all-btn" class="bg-emerald-600 hover:bg-emerald-500 px-6 py-2 rounded-lg font-bold transition-all shadow-lg shadow-emerald-900/20 text-sm">一括保存</button>
-                <a href="index.html" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-lg text-sm transition-colors flex items-center">ダッシュボードへ戻る</a>
+            <div class="flex flex-wrap gap-2 sm:gap-3 w-full sm:w-auto">
+                <button id="add-card-btn" class="bg-blue-600 hover:bg-blue-500 px-3 sm:px-4 py-2 rounded-lg font-bold transition-all shadow-lg shadow-blue-900/20 text-xs sm:text-sm flex-1 sm:flex-initial text-center whitespace-nowrap">新規カード追加</button>
+                <button id="save-all-btn" class="bg-emerald-600 hover:bg-emerald-500 px-4 sm:px-6 py-2 rounded-lg font-bold transition-all shadow-lg shadow-emerald-900/20 text-xs sm:text-sm flex-1 sm:flex-initial text-center whitespace-nowrap">一括保存</button>
+                <a href="index.html" class="bg-slate-800 hover:bg-slate-700 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm transition-colors flex items-center justify-center flex-1 sm:flex-initial text-center whitespace-nowrap">ダッシュボードへ戻る</a>
             </div>
         </header>
 
-        <div id="cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div id="cards-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4 mb-8">
             <!-- Cards will be injected here -->
         </div>
 
         <!-- Edit Form (Modal-like or persistent area) -->
-        <div id="edit-area" class="hidden bg-slate-800/50 backdrop-blur-xl border border-slate-700 rounded-2xl p-6 shadow-2xl">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-bold flex items-center gap-2">
-                    <span id="editing-card-index" class="bg-cyan-600/20 text-cyan-400 w-8 h-8 rounded-full flex items-center justify-center text-sm font-mono border border-cyan-500/30"></span>
-                    カードの編集
-                </h2>
+        <div id="edit-area" class="hidden bg-slate-800/50 backdrop-blur-xl border border-slate-700 rounded-2xl p-4 sm:p-6 shadow-2xl">
+            <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
+                <div class="flex items-center gap-3 flex-wrap">
+                    <h2 class="text-xl font-bold flex items-center gap-2">
+                        <span id="editing-card-index" class="bg-cyan-600/20 text-cyan-400 w-8 h-8 rounded-full flex items-center justify-center text-sm font-mono border border-cyan-500/30"></span>
+                        カードの編集
+                    </h2>
+                    <div class="inline-flex items-center gap-1.5 bg-slate-900/90 border border-slate-700 px-2.5 py-1 rounded-md text-xs font-mono text-slate-300 select-all" title="Firestore ドキュメントID（変更不可）">
+                        <span class="text-[10px] text-slate-500 uppercase font-semibold">ID:</span>
+                        <span id="editing-card-id" class="text-cyan-400 font-semibold"></span>
+                    </div>
+                </div>
                 <button id="delete-card-btn" class="px-4 py-2 rounded-lg bg-rose-600/20 text-rose-400 border border-rose-500/30 hover:bg-rose-600 hover:text-white transition-all text-sm font-medium">このカードを削除</button>
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">表示位置 (トップページ)</label>
+                        <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">表示位置 (トップページ / アーカイブ)</label>
                         <select id="edit-position" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:ring-2 focus:ring-cyan-500/50 outline-none transition-all">
                             <option value="">非表示 (None)</option>
                             <option value="1">位置 1</option>
@@ -86,8 +99,9 @@
                             <option value="6">位置 6</option>
                             <option value="7">位置 7</option>
                             <option value="8">位置 8</option>
+                            <option value="archived">Archived (アーカイブ)</option>
                         </select>
-                        <p class="text-[10px] text-slate-500 mt-1">※1〜8を選択するとトップページの該当箇所に表示されます。</p>
+                        <p class="text-[10px] text-slate-500 mt-1">※位置1〜8はトップページに配置されます。「Archived」はトップには表示されず、/archives ページにリスト表示されます。</p>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">タイトル</label>
@@ -120,6 +134,29 @@
             <div class="mt-8 flex justify-end gap-3">
                 <button id="cancel-edit" class="px-6 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 transition-all text-sm">キャンセル</button>
                 <button id="apply-edit" class="px-6 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 font-bold shadow-lg shadow-cyan-900/40 transition-all text-sm">反映（プレビューへ）</button>
+            </div>
+        </div>
+
+        <!-- Result Modal Dialog -->
+        <div id="result-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+            <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in duration-150">
+                <div class="flex items-center gap-3">
+                    <div id="modal-icon-container" class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                        <!-- Dynamically filled with icon -->
+                    </div>
+                    <div>
+                        <h3 id="modal-title" class="text-lg font-bold text-white leading-tight"></h3>
+                        <p id="modal-subtitle" class="text-xs text-slate-400 mt-0.5"></p>
+                    </div>
+                </div>
+
+                <div id="modal-body" class="bg-slate-950/60 border border-slate-800 rounded-xl p-4 text-xs font-mono text-slate-300 space-y-2 max-h-60 overflow-y-auto">
+                    <!-- Detailed slot summary or error message -->
+                </div>
+
+                <div class="flex justify-end pt-2">
+                    <button id="modal-close-btn" class="px-5 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-sm font-semibold shadow-lg shadow-cyan-950/50 transition-all">閉じる</button>
+                </div>
             </div>
         </div>
     </div>
@@ -188,6 +225,21 @@
             fetchData();
         }
 
+        // Helper: Parse position value (1..8, 'archived', or null)
+        function parsePositionValue(val) {
+            if (val === 'archived') return 'archived';
+            if (val === '' || val === null || val === undefined) return null;
+            const num = parseInt(val, 10);
+            return (!isNaN(num) && num >= 1 && num <= 8) ? num : null;
+        }
+
+        // Helper: Sorting weight for card positions
+        function getPositionWeight(pos) {
+            if (typeof pos === 'number' && pos >= 1 && pos <= 8) return pos;
+            if (pos === 'archived') return 900;
+            return 999;
+        }
+
         // --- Data Section ---
         async function fetchData() {
             try {
@@ -207,23 +259,54 @@
                             if (match) {
                                 pos = parseInt(match[1], 10);
                             }
+                        } else {
+                            pos = parsePositionValue(pos);
                         }
 
                         return { ...data, id: doc.id, position: pos };
                     });
                 }
 
-                // Sort cards: those with a position first (1 to 8), then others
-                cards.sort((a, b) => {
-                    const posA = a.position || 999;
-                    const posB = b.position || 999;
-                    return posA - posB;
-                });
+                // Sort cards: those with position 1-8 first, then archived, then hidden
+                cards.sort((a, b) => getPositionWeight(a.position) - getPositionWeight(b.position));
 
                 renderGrid();
             } catch (err) {
                 console.warn("[DEBUG] Fetch failed, using local defaults", err);
                 renderGrid();
+            }
+        }
+
+        function changeCardPosition(cardIndex, newPositionVal) {
+            const newPosition = parsePositionValue(newPositionVal);
+            const currentCard = cards[cardIndex];
+            const oldPosition = currentCard.position;
+
+            if (newPosition === oldPosition) return;
+
+            // Only swap if the new position is a numbered slot 1..8
+            if (typeof newPosition === 'number' && newPosition >= 1 && newPosition <= 8) {
+                const conflictingIndex = cards.findIndex((c, idx) => c.position === newPosition && idx !== cardIndex);
+                if (conflictingIndex !== -1) {
+                    cards[conflictingIndex].position = (typeof oldPosition === 'number' && oldPosition >= 1 && oldPosition <= 8) ? oldPosition : null;
+                }
+            }
+
+            currentCard.position = newPosition;
+
+            // Sort cards
+            cards.sort((a, b) => getPositionWeight(a.position) - getPositionWeight(b.position));
+
+            renderGrid();
+
+            // If an edit form is currently open, refresh its position field
+            if (currentEditingIndex !== -1) {
+                const updatedIndex = cards.findIndex(c => c.id === currentCard.id);
+                if (updatedIndex !== -1) {
+                    currentEditingIndex = updatedIndex;
+                    document.getElementById('editing-card-index').textContent = updatedIndex + 1;
+                    document.getElementById('edit-position').value = currentCard.position || '';
+                }
             }
         }
 
@@ -233,25 +316,42 @@
             cards.forEach((card, idx) => {
                 const color = colorClasses[card.colorTheme] || colorClasses.cyan;
                 const cardEl = document.createElement('div');
-                cardEl.className = 'cosmic-card-preview p-4 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-slate-800/80 group border-t-4 border-t-transparent relative';
+                cardEl.className = 'cosmic-card-preview p-2.5 sm:p-4 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-slate-800/80 group border-t-4 border-t-transparent relative min-h-[160px] sm:min-h-[180px]';
 
-                let positionBadge = '';
-                if (card.position && card.position >= 1 && card.position <= 8) {
-                    positionBadge = `<div class="absolute top-2 right-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-1 rounded-full">位置 ${card.position}</div>`;
-                } else {
-                    positionBadge = `<div class="absolute top-2 right-2 bg-slate-700 text-slate-300 text-[10px] font-bold px-2 py-1 rounded-full">非表示</div>`;
-                }
+                const isAssigned = typeof card.position === 'number' && card.position >= 1 && card.position <= 8;
+                const isArchived = card.position === 'archived';
+                const selectBg = isAssigned
+                    ? 'bg-emerald-600/90 hover:bg-emerald-500 border-emerald-400/50 text-white'
+                    : isArchived
+                    ? 'bg-purple-600/90 hover:bg-purple-500 border-purple-400/50 text-white'
+                    : 'bg-slate-800 hover:bg-slate-700 border-slate-600 text-slate-300';
 
                 cardEl.innerHTML = `
-                    ${positionBadge}
-                    <div class="plasma-sphere bg-gradient-to-br ${color.from} ${color.to} mb-3 group-hover:scale-110 transition-transform">
-                        <div class="w-6 h-6 flex items-center justify-center text-white">
+                    <div class="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 z-10" onclick="event.stopPropagation()">
+                        <select class="pos-selector text-[10px] sm:text-[11px] font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full border shadow-sm cursor-pointer outline-none transition-all ${selectBg}" title="位置を選択（1〜8重複時は自動入れ替え）">
+                            <option value="" ${!card.position ? 'selected' : ''} class="bg-slate-900 text-slate-300">非表示</option>
+                            ${[1,2,3,4,5,6,7,8].map(p => `<option value="${p}" ${card.position === p ? 'selected' : ''} class="bg-slate-900 text-white">位置 ${p}</option>`).join('')}
+                            <option value="archived" ${isArchived ? 'selected' : ''} class="bg-slate-900 text-purple-300">Archived</option>
+                        </select>
+                    </div>
+                    <div class="plasma-sphere bg-gradient-to-br ${color.from} ${color.to} mb-2 sm:mb-3 group-hover:scale-110 transition-transform">
+                        <div class="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center text-white">
                             ${card.svgCode}
                         </div>
                     </div>
-                    <span class="text-xs font-bold text-slate-100 mb-1 leading-tight">${card.title || '（名称未設定）'}</span>
-                    <span class="text-[10px] text-slate-500 font-mono">${card.colorTheme}</span>
+                    <span class="text-[11px] sm:text-xs font-bold text-slate-100 mb-1 leading-snug line-clamp-2 break-words w-full px-1">${card.title || '（名称未設定）'}</span>
+                    <div class="flex flex-wrap items-center justify-center gap-1 mt-0.5">
+                        <span class="text-[9px] sm:text-[10px] text-cyan-400/80 font-mono bg-slate-900/60 px-1 sm:px-1.5 py-0.5 rounded border border-slate-700/50 truncate max-w-[85px] sm:max-w-none">${card.id || ''}</span>
+                        ${isArchived ? '<span class="text-[9px] sm:text-[10px] text-purple-300 font-mono bg-purple-950/80 border border-purple-500/40 px-1 py-0.5 rounded">Archived</span>' : ''}
+                        <span class="text-[9px] sm:text-[10px] text-slate-500 font-mono">${card.colorTheme}</span>
+                    </div>
                 `;
+
+                const posSelect = cardEl.querySelector('.pos-selector');
+                posSelect.onchange = (e) => {
+                    changeCardPosition(idx, e.target.value);
+                };
+
                 cardEl.onclick = () => openEditForm(idx);
                 grid.appendChild(cardEl);
             });
@@ -261,6 +361,7 @@
             currentEditingIndex = idx;
             const card = cards[idx];
             document.getElementById('editing-card-index').textContent = idx + 1;
+            document.getElementById('editing-card-id').textContent = card.id || '（未採番）';
             document.getElementById('edit-title').value = card.title || '';
             document.getElementById('edit-url').value = card.url || '';
             document.getElementById('edit-color').value = card.colorTheme || 'cyan';
@@ -303,21 +404,15 @@
             if (currentEditingIndex === -1) return;
             
             const newPositionStr = document.getElementById('edit-position').value;
-            const newPosition = newPositionStr ? parseInt(newPositionStr, 10) : null;
+            const newPosition = parsePositionValue(newPositionStr);
+            const oldPosition = cards[currentEditingIndex].position;
 
-            // Check for collision
-            if (newPosition !== null) {
+            // Check for collision and swap only if newPosition is a numbered slot (1..8)
+            if (typeof newPosition === 'number' && newPosition >= 1 && newPosition <= 8 && newPosition !== oldPosition) {
                 const conflictingIndex = cards.findIndex((c, idx) => c.position === newPosition && idx !== currentEditingIndex);
                 if (conflictingIndex !== -1) {
-                    const conflictingCard = cards[conflictingIndex];
-                    const proceed = confirm(`位置 ${newPosition} には既に「${conflictingCard.title}」が設定されています。\n上書きして、「${conflictingCard.title}」を非表示にしてもよろしいですか？`);
-
-                    if (!proceed) {
-                        return; // Cancel apply
-                    }
-
-                    // Overwrite logic: unset conflicting card's position
-                    cards[conflictingIndex].position = null;
+                    // Swap conflicting card's position with current card's old position
+                    cards[conflictingIndex].position = (typeof oldPosition === 'number' && oldPosition >= 1 && oldPosition <= 8) ? oldPosition : null;
                 }
             }
 
@@ -331,11 +426,7 @@
             };
             
             // Re-sort and render
-            cards.sort((a, b) => {
-                const posA = a.position || 999;
-                const posB = b.position || 999;
-                return posA - posB;
-            });
+            cards.sort((a, b) => getPositionWeight(a.position) - getPositionWeight(b.position));
 
             currentEditingIndex = -1;
             renderGrid();
@@ -348,15 +439,39 @@
             document.getElementById('edit-area').classList.add('hidden');
         };
 
+        function showResultModal({ isSuccess, title, subtitle, detailsHtml }) {
+            const modal = document.getElementById('result-modal');
+            const iconContainer = document.getElementById('modal-icon-container');
+            const titleEl = document.getElementById('modal-title');
+            const subtitleEl = document.getElementById('modal-subtitle');
+            const bodyEl = document.getElementById('modal-body');
+
+            if (isSuccess) {
+                iconContainer.className = 'w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+                iconContainer.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+            } else {
+                iconContainer.className = 'w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 bg-rose-500/20 text-rose-400 border border-rose-500/30';
+                iconContainer.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
+            }
+
+            titleEl.textContent = title;
+            subtitleEl.textContent = subtitle;
+            bodyEl.innerHTML = detailsHtml;
+
+            modal.classList.remove('hidden');
+        }
+
+        document.getElementById('modal-close-btn').onclick = () => {
+            document.getElementById('result-modal').classList.add('hidden');
+        };
+
         document.getElementById('save-all-btn').onclick = async () => {
             const btn = document.getElementById('save-all-btn');
             btn.textContent = '保存中...';
             btn.disabled = true;
 
             try {
-                // To bypass firestore rules requiring authentication in admin script,
-                // we assume anonymous login might be needed if rules change, but current rules allow if true for some,
-                // but let's be safe and try to signInAnonymously if needed. The prompt mentioned signInAnonymously is used.
+                // Ensure auth state if needed
                 if (!firebase.auth().currentUser) {
                     try {
                         await firebase.auth().signInAnonymously();
@@ -368,8 +483,19 @@
                 const writeOperations = [];
 
                 cards.forEach(card => {
+                    // Sanitize card data to ensure Firestore compatibility
+                    const finalPos = parsePositionValue(card.position);
+                    const payload = {
+                        id: card.id,
+                        title: card.title || '',
+                        url: card.url || '',
+                        colorTheme: card.colorTheme || 'cyan',
+                        svgCode: card.svgCode || '',
+                        position: finalPos
+                    };
+
                     const docRef = db.collection(COLLECTION_NAME).doc(card.id);
-                    writeOperations.push({ type: 'set', docRef, data: card });
+                    writeOperations.push({ type: 'set', docRef, data: payload });
                 });
 
                 cardsToDelete.forEach(id => {
@@ -393,10 +519,52 @@
                 }
 
                 cardsToDelete = []; // Reset deleted queue
-                alert('すべてのカード情報をFirestoreに保存しました！');
+
+                // Build detailed layout summary for the result dialog
+                const assigned = cards.filter(c => typeof c.position === 'number' && c.position >= 1 && c.position <= 8).sort((a,b) => a.position - b.position);
+                const archived = cards.filter(c => c.position === 'archived');
+                const hiddenCount = cards.filter(c => !c.position).length;
+
+                let summaryHtml = `<div class="font-bold text-slate-200 mb-2 border-b border-slate-800 pb-1">Firestore保存完了サマリー（計 ${cards.length} 件）</div>`;
+                summaryHtml += `<div class="space-y-1">`;
+                assigned.forEach(c => {
+                    summaryHtml += `<div class="flex items-center justify-between text-[11px] py-0.5">
+                        <span class="text-emerald-400 font-bold w-14">位置 ${c.position}:</span>
+                        <span class="text-slate-200 truncate flex-1 px-2">${c.title}</span>
+                        <span class="text-slate-500 font-mono text-[10px]">${c.id}</span>
+                    </div>`;
+                });
+                summaryHtml += `</div>`;
+
+                if (archived.length > 0) {
+                    summaryHtml += `<div class="mt-2.5 pt-2 border-t border-slate-800 text-[11px] text-purple-300">Archived (アーカイブ): <span class="font-bold">${archived.length}件</span> (/archives でリスト表示)</div>`;
+                }
+
+                if (hiddenCount > 0) {
+                    summaryHtml += `<div class="mt-2 pt-1 border-t border-slate-800/60 text-[11px] text-slate-400">非表示カード: <span class="text-slate-200 font-bold">${hiddenCount}件</span></div>`;
+                }
+
+                showResultModal({
+                    isSuccess: true,
+                    title: 'Firestoreへの一括保存が完了しました',
+                    subtitle: 'カード表示位置とアーカイブ状態が正常に更新されました。',
+                    detailsHtml: summaryHtml
+                });
             } catch (err) {
-                console.warn("[DEBUG] Save failed", err);
-                alert('保存に失敗しました。コンソールを確認してください。');
+                console.error("[ERROR] Save failed", err);
+                const errorMsg = err.message || String(err);
+                const errorDetails = `
+                    <div class="text-rose-400 font-bold mb-2">エラー詳細:</div>
+                    <div class="bg-rose-950/40 p-2.5 rounded border border-rose-900/50 text-rose-300 break-all">${errorMsg}</div>
+                    <div class="text-[11px] text-slate-400 mt-2">※Firebaseセキュリティルールやネットワーク接続を確認してください。</div>
+                `;
+
+                showResultModal({
+                    isSuccess: false,
+                    title: 'Firestoreへの保存に失敗しました',
+                    subtitle: '変更内容はFirestoreに書き込まれませんでした。',
+                    detailsHtml: errorDetails
+                });
             } finally {
                 btn.textContent = '一括保存';
                 btn.disabled = false;
