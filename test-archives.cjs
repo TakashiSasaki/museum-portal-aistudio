@@ -87,6 +87,11 @@ async function runArchivesTest() {
 
     // Step 5: Test real Firestore archive end-to-end flow with card1
     console.log('[test-archives] 5. Testing real Firestore archived card behavior');
+    const initialBadgeCount = await page.evaluate(() => {
+        const b = document.getElementById('header-archives-badge');
+        return b && !b.classList.contains('hidden') ? Number(b.textContent.trim()) : 0;
+    });
+
     // Set card1 position to 'archived'
     await page.evaluate(async () => {
         await firebase.firestore().collection('portalCards').doc('card1').update({ position: 'archived' });
@@ -107,12 +112,12 @@ async function runArchivesTest() {
     assert.ok(badgeTexts.some(t => t.includes('Archived')), 'Card should display Archived badge');
     assert.ok(badgeTexts.some(t => t.includes('ID: card1')), 'Card should display ID: card1 badge');
 
-    // Verify header archives badge displays 1
+    // Verify header archives badge increases by 1
     const archivesBadgeText = await page.evaluate(() => {
         const b = document.getElementById('header-archives-badge');
-        return b && !b.classList.contains('hidden') ? b.textContent.trim() : null;
+        return b && !b.classList.contains('hidden') ? Number(b.textContent.trim()) : 0;
     });
-    assert.equal(archivesBadgeText, '1', 'header-archives-badge should display 1');
+    assert.equal(archivesBadgeText, initialBadgeCount + 1, `header-archives-badge should increment by 1 (expected ${initialBadgeCount + 1}, got ${archivesBadgeText})`);
 
     // Test bookmarking from archives page
     console.log('[test-archives] 5b. Bookmarking archived card from archives view');

@@ -1,3 +1,7 @@
+html {
+    overflow-x: hidden;
+}
+
 body {
     font-family: 'Noto Sans JP', sans-serif;
     color: #e2e8f0;
@@ -235,23 +239,61 @@ body {
     }
 }
 
-#header-bookmarks-button > span {
-    font-family: "Times New Roman", Times, serif;
-    font-size: 16px;
-    text-align: center;
-}
-
+#header-highlights-button,
+#header-bookmarks-button,
 #header-archives-button {
-    font-size: 16px;
-    line-height: 20px;
     font-family: "Times New Roman", Times, serif;
-}
-
-#header-archives-button > span {
-    font-family: "Times New Roman", Times, serif;
+    font-size: 13px;
     line-height: 16px;
 }
 
+#header-highlights-button > span,
+#header-bookmarks-button > span,
+#header-archives-button > span {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 13px;
+    text-align: center;
+    line-height: 16px;
+}
+
+@media (min-width: 640px) {
+    #header-highlights-button,
+    #header-bookmarks-button,
+    #header-archives-button {
+        font-size: 15px;
+        line-height: 20px;
+    }
+    #header-highlights-button > span,
+    #header-bookmarks-button > span,
+    #header-archives-button > span {
+        font-size: 15px;
+        line-height: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-quick-actions {
+        gap: 0.375rem !important;
+    }
+    .header-action-button {
+        padding: 0.2rem 0.5rem !important;
+        font-size: 11px !important;
+    }
+    #header-highlights-button,
+    #header-bookmarks-button,
+    #header-archives-button {
+        font-size: 11px !important;
+        line-height: 14px !important;
+    }
+    #header-highlights-button > span,
+    #header-bookmarks-button > span,
+    #header-archives-button > span {
+        font-size: 11px !important;
+        line-height: 14px !important;
+    }
+}
+
+#header-highlights-button > svg,
 #header-bookmarks-button > svg,
 #header-archives-button > svg {
     color: #67e8f9;
@@ -259,6 +301,7 @@ body {
     transition: filter 0.25s ease, color 0.25s ease, transform 0.2s ease;
 }
 
+#header-highlights-button:hover > svg,
 #header-bookmarks-button:hover > svg,
 #header-archives-button:hover > svg {
     color: #ffffff;

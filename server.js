@@ -17,8 +17,8 @@ app.get('/healthz', (req, res) => {
 // Serve static assets from public directory
 const publicDir = path.join(__dirname, 'public');
 
-// SPA route for /bookmarks and /archives
-app.get(['/bookmarks', '/bookmarks/', '/archives', '/archives/'], (req, res) => {
+// SPA route for /bookmarks, /archives, and /highlights
+app.get(['/bookmarks', '/bookmarks/', '/archives', '/archives/', '/highlights', '/highlights/'], (req, res) => {
   res.sendFile(path.join(publicDir, 'index.html'));
 });
 

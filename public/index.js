@@ -102,6 +102,35 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    const defaultHighlightsIds = ['card3', 'card2', 'card4', 'card1'];
+
+    function getHighlightsCards() {
+        const explicitHighlights = allLoadedCards.filter(c => c.isHighlight === true || c.highlight === true);
+        if (explicitHighlights.length > 0) {
+            return explicitHighlights;
+        }
+        const curated = [];
+        defaultHighlightsIds.forEach(id => {
+            const found = allLoadedCards.find(c => c.id === id);
+            if (found && found.position !== 'archived') {
+                curated.push(found);
+            }
+        });
+        return curated.length > 0 ? curated : allLoadedCards.filter(c => typeof c.position === 'number' && c.position <= 4);
+    }
+
+    function updateHighlightsBadge() {
+        const badge = document.getElementById('header-highlights-badge');
+        if (!badge) return;
+        const count = getHighlightsCards().length;
+        if (count > 0) {
+            badge.textContent = count;
+            badge.classList.remove('hidden');
+        } else {
+            badge.classList.add('hidden');
+        }
+    }
+
     function getCardInfoByIdOrSlot(cardId, slot) {
         const numericSlot = slot ? Number(slot) : null;
         // 1. Check in current active cards by position
@@ -233,9 +262,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isBookmarksRoute()) {
             renderBookmarksList();
         }
+        if (isHighlightsRoute()) {
+            renderHighlightsList();
+        }
     }
 
     // --- SPA Routing ---
+    function isHighlightsRoute() {
+        const p = window.location.pathname;
+        return p === '/highlights' || p === '/highlights/' || p === '/highlights.html';
+    }
+
     function isBookmarksRoute() {
         const p = window.location.pathname;
         return p === '/bookmarks' || p === '/bookmarks/' || p === '/bookmarks.html';
@@ -248,17 +285,56 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderRoute() {
         closeRemoveBookmarkDialog();
+        const highlightsView = document.getElementById('highlights-view');
         const bookmarksView = document.getElementById('bookmarks-view');
         const archivesView = document.getElementById('archives-view');
+        const highlightsBtn = document.getElementById('header-highlights-button');
         const bookmarksBtn = document.getElementById('header-bookmarks-button');
         const archivesBtn = document.getElementById('header-archives-button');
         const pageTitle = document.getElementById('header-main-title');
         const slogan = document.querySelector('.slogan-text');
 
-        if (isBookmarksRoute()) {
+        if (isHighlightsRoute()) {
             portalGrid.classList.add('hidden');
+            if (bookmarksView) {
+                bookmarksView.classList.add('hidden');
+            }
             if (archivesView) {
                 archivesView.classList.add('hidden');
+            }
+            if (bookmarksBtn) {
+                bookmarksBtn.classList.remove('active-bookmark-route');
+            }
+            if (archivesBtn) {
+                archivesBtn.classList.remove('active-bookmark-route');
+            }
+            if (highlightsView) {
+                highlightsView.classList.remove('hidden');
+                renderHighlightsList();
+            }
+            if (highlightsBtn) {
+                highlightsBtn.classList.add('active-bookmark-route');
+            }
+            if (pageTitle) {
+                if (!pageTitle.hasAttribute('data-original-title')) {
+                    pageTitle.setAttribute('data-original-title', pageTitle.textContent.trim());
+                }
+                pageTitle.textContent = 'ハイライト';
+            }
+            if (slogan) {
+                slogan.classList.add('opacity-0', 'pointer-events-none');
+            }
+            document.title = 'ハイライト | 愛媛大学ミュージアムポータルサイト';
+        } else if (isBookmarksRoute()) {
+            portalGrid.classList.add('hidden');
+            if (highlightsView) {
+                highlightsView.classList.add('hidden');
+            }
+            if (archivesView) {
+                archivesView.classList.add('hidden');
+            }
+            if (highlightsBtn) {
+                highlightsBtn.classList.remove('active-bookmark-route');
             }
             if (archivesBtn) {
                 archivesBtn.classList.remove('active-bookmark-route');
@@ -282,8 +358,14 @@ document.addEventListener('DOMContentLoaded', () => {
             document.title = 'ブックマーク | 愛媛大学ミュージアムポータルサイト';
         } else if (isArchivesRoute()) {
             portalGrid.classList.add('hidden');
+            if (highlightsView) {
+                highlightsView.classList.add('hidden');
+            }
             if (bookmarksView) {
                 bookmarksView.classList.add('hidden');
+            }
+            if (highlightsBtn) {
+                highlightsBtn.classList.remove('active-bookmark-route');
             }
             if (bookmarksBtn) {
                 bookmarksBtn.classList.remove('active-bookmark-route');
@@ -307,11 +389,17 @@ document.addEventListener('DOMContentLoaded', () => {
             document.title = 'アーカイブ | 愛媛大学ミュージアムポータルサイト';
         } else {
             portalGrid.classList.remove('hidden');
+            if (highlightsView) {
+                highlightsView.classList.add('hidden');
+            }
             if (bookmarksView) {
                 bookmarksView.classList.add('hidden');
             }
             if (archivesView) {
                 archivesView.classList.add('hidden');
+            }
+            if (highlightsBtn) {
+                highlightsBtn.classList.remove('active-bookmark-route');
             }
             if (bookmarksBtn) {
                 bookmarksBtn.classList.remove('active-bookmark-route');
@@ -340,6 +428,129 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('popstate', () => {
         renderRoute();
     });
+
+    function renderHighlightsList() {
+        const container = document.getElementById('highlights-list-container');
+        const countText = document.getElementById('highlights-count-text');
+        if (!container) return;
+
+        const highlightsCards = getHighlightsCards();
+        if (countText) {
+            countText.textContent = `${highlightsCards.length}件のハイライト`;
+        }
+
+        if (highlightsCards.length === 0) {
+            container.innerHTML = `
+                <div class="flex flex-col items-center justify-center text-center py-10 px-4">
+                    <div class="w-14 h-14 rounded-full bg-slate-800/80 border border-slate-700/60 flex items-center justify-center mb-3 text-amber-400">
+                        <svg viewBox="0 0 24 24" class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                    </div>
+                    <p class="text-sm font-medium text-slate-200 mb-1">ハイライトされたコンテンツはありません</p>
+                    <p class="text-xs text-slate-400 max-w-xs mb-5 leading-relaxed">
+                        管理者による厳選・おすすめコンテンツが登録されると、ここに一覧表示されます。
+                    </p>
+                    <button
+                        type="button"
+                        id="highlights-empty-back-btn"
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-950/70 hover:bg-cyan-900/90 border border-cyan-500/50 hover:border-cyan-400 text-xs font-medium text-cyan-200 hover:text-white transition-all cursor-pointer"
+                    >
+                        <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                        <span>ポータルへ戻る</span>
+                    </button>
+                </div>
+            `;
+            const emptyBackBtn = document.getElementById('highlights-empty-back-btn');
+            if (emptyBackBtn) {
+                emptyBackBtn.addEventListener('click', () => navigateTo('/'));
+            }
+            return;
+        }
+
+        const bookmarks = getStoredBookmarks();
+        const bookmarkedIdSet = new Set(bookmarks.map(b => b.id || b.cardId || (b.slot ? `card${b.slot}` : '')));
+
+        let html = '';
+        highlightsCards.forEach(card => {
+            const cardId = card.id;
+            const title = card.title || cardId;
+            const url = card.url || '#';
+            const colorTheme = card.colorTheme || 'cyan';
+            const svgCode = card.svgCode || '';
+
+            const theme = themeMap[colorTheme] || themeMap['cyan'];
+            const cleanTitle = title.replace(/<br\s*\/?>/gi, ' ');
+            const iconSvg = svgCode && svgCode.trim() ? svgCode : defaultIconSvg;
+            const targetUrl = url;
+            const isExternal = targetUrl.startsWith('http');
+            const isBookmarked = bookmarkedIdSet.has(cardId);
+
+            html += `
+                <div class="cosmic-card p-3 sm:p-4 flex items-center justify-between gap-3 text-left w-full group relative" data-highlight-item-id="${cardId}">
+                    <a href="${targetUrl}" ${isExternal ? 'target="_blank" rel="noopener noreferrer"' : ''} class="flex items-center gap-3 flex-1 min-w-0">
+                        <div class="plasma-sphere ${theme.grad ? 'bg-gradient-to-br ' + theme.grad : 'bg-slate-700'} w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-full">
+                            ${iconSvg}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2 mb-0.5 flex-wrap">
+                                <h2 class="text-sm font-medium text-slate-100 group-hover:text-amber-200 transition-colors truncate">${cleanTitle}</h2>
+                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-amber-950/80 text-amber-300 border border-amber-500/40 tracking-wider flex-shrink-0">Highlight</span>
+                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-slate-900/80 text-slate-400 border border-slate-700/50 tracking-wider flex-shrink-0" title="カードID (FirestoreドキュメントID)">ID: ${cardId}</span>
+                            </div>
+                            <span class="text-[11px] text-slate-400 truncate block mt-0.5">${targetUrl}</span>
+                        </div>
+                    </a>
+                    <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+                        <a
+                            href="${targetUrl}"
+                            ${isExternal ? 'target="_blank" rel="noopener noreferrer"' : ''}
+                            class="px-2.5 py-1.5 rounded-lg bg-amber-950/60 hover:bg-amber-900/90 border border-amber-500/40 text-amber-300 hover:text-white text-xs flex items-center gap-1 transition-all cursor-pointer"
+                            title="ページを開く"
+                        >
+                            <span>開く</span>
+                            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                <polyline points="15 3 21 3 21 9"></polyline>
+                                <line x1="10" y1="14" x2="21" y2="3"></line>
+                            </svg>
+                        </a>
+                        <button
+                            type="button"
+                            class="highlight-bookmark-btn p-1.5 rounded-lg border transition-all cursor-pointer ${isBookmarked ? 'bg-amber-950/60 border-amber-500/60 text-amber-300' : 'bg-slate-800/70 border-slate-700/60 text-slate-400 hover:text-cyan-300 hover:border-cyan-500/50'}"
+                            data-card-id="${cardId}"
+                            aria-label="${cleanTitle} (ID: ${cardId}) のブックマークを切り替え"
+                            title="${isBookmarked ? 'ブックマーク解除' : 'ブックマークに追加'} (ID: ${cardId})"
+                        >
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="${isBookmarked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.75">
+                                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+
+        const highlightBookmarkBtns = container.querySelectorAll('.highlight-bookmark-btn');
+        highlightBookmarkBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const cardId = btn.dataset.cardId;
+                toggleCardBookmark(cardId, null);
+                renderHighlightsList();
+            });
+        });
+
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }
 
     function renderArchivesList() {
         const container = document.getElementById('archives-list-container');
@@ -731,9 +942,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         updateAllCardBookmarkStates();
         updateArchivesBadge();
+        updateHighlightsBadge();
 
         if (isArchivesRoute()) {
             renderArchivesList();
+        }
+        if (isHighlightsRoute()) {
+            renderHighlightsList();
         }
 
         if (typeof lucide !== 'undefined') {
@@ -761,6 +976,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Wire up header Highlights button
+    const headerHighlightsBtn = document.getElementById('header-highlights-button');
+    if (headerHighlightsBtn) {
+        headerHighlightsBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (isHighlightsRoute()) {
+                navigateTo('/');
+            } else {
+                navigateTo('/highlights');
+            }
+        });
+    }
+
     // Wire up header Bookmarks button
     const headerBookmarksBtn = document.getElementById('header-bookmarks-button');
     if (headerBookmarksBtn) {
@@ -787,6 +1015,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Wire up back button in highlights view
+    const highlightsBackBtn = document.getElementById('highlights-back-button');
+    if (highlightsBackBtn) {
+        highlightsBackBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            navigateTo('/');
+        });
+    }
+
     // Wire up back button in bookmarks view
     const bookmarksBackBtn = document.getElementById('bookmarks-back-button');
     if (bookmarksBackBtn) {
@@ -805,11 +1042,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Title click returns to portal when in bookmarks or archives view
+    // Title click returns to portal when in highlights, bookmarks or archives view
     const headerMainTitle = document.getElementById('header-main-title');
     if (headerMainTitle) {
         headerMainTitle.addEventListener('click', () => {
-            if (isBookmarksRoute() || isArchivesRoute()) {
+            if (isHighlightsRoute() || isBookmarksRoute() || isArchivesRoute()) {
                 navigateTo('/');
             }
         });
@@ -871,7 +1108,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 title: cardData.title || '',
                 url: cardData.url || '#',
                 colorTheme: cardData.colorTheme || 'cyan',
-                svgCode: cardData.svgCode || ''
+                svgCode: cardData.svgCode || '',
+                isHighlight: cardData.isHighlight === true || cardData.highlight === true
             };
             allLoadedCards.push(cardRecord);
 
@@ -957,9 +1195,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         updateAllCardBookmarkStates();
         updateArchivesBadge();
+        updateHighlightsBadge();
 
         if (isArchivesRoute()) {
             renderArchivesList();
+        }
+        if (isHighlightsRoute()) {
+            renderHighlightsList();
         }
         if (isBookmarksRoute()) {
             renderBookmarksList();

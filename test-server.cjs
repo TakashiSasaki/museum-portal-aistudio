@@ -74,6 +74,14 @@ test('server delivers archives SPA page at /archives with status 200', async () 
     assert.ok(html.includes('archives-view'), 'Archives route HTML should contain archives-view');
 });
 
+test('server delivers highlights SPA page at /highlights with status 200', async () => {
+    const res = await fetch(`${BASE_URL}/highlights`);
+    assert.equal(res.status, 200);
+    assert.match(res.headers.get('content-type') || '', /text\/html/);
+    const html = await res.text();
+    assert.ok(html.includes('highlights-view'), 'Highlights route HTML should contain highlights-view');
+});
+
 test('server sets no-cache header on /sw.js and /sw-core-v44.js', async () => {
     const swRes = await fetch(`${BASE_URL}/sw.js`);
     assert.equal(swRes.status, 200);

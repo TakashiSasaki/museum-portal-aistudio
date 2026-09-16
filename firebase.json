@@ -20,6 +20,10 @@
     ],
     "rewrites": [
       {
+        "source": "/highlights**",
+        "destination": "/index.html"
+      },
+      {
         "source": "/bookmarks**",
         "destination": "/index.html"
       },

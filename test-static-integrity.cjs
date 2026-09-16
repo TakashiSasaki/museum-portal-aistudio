@@ -117,6 +117,10 @@ test('public/index.html top-page structural and responsive contract', () => {
         'admin-trigger-button must not have a title balloon attribute'
     );
     assert.ok(
+        html.includes('id="header-highlights-button"'),
+        'index.html header must contain #header-highlights-button'
+    );
+    assert.ok(
         html.includes('id="header-bookmarks-button"'),
         'index.html header must contain #header-bookmarks-button'
     );
@@ -125,8 +129,12 @@ test('public/index.html top-page structural and responsive contract', () => {
         'index.html header must contain #header-archives-button'
     );
     assert.ok(
-        html.includes('Bookmarks') && html.includes('Archives'),
-        'index.html header must contain Bookmarks and Archives labels'
+        html.includes('Highlights') && html.includes('Bookmarks') && html.includes('Archives'),
+        'index.html header must contain Highlights, Bookmarks and Archives labels'
+    );
+    assert.ok(
+        html.includes('id="highlights-view"'),
+        'index.html must contain #highlights-view'
     );
 
     // Grid responsive classes contract

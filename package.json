@@ -13,6 +13,7 @@
     "test:browser": "node test-browser-smoke.cjs",
     "test:bookmarks": "node test-bookmarks.cjs",
     "test:archives": "node test-archives.cjs",
+    "test:highlights": "node test-highlights.cjs",
     "test": "node --test test-static-integrity.cjs test-imaginedeck-fullscreen-guard.cjs test-server.cjs"
   },
   "devDependencies": {
