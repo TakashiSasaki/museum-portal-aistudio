@@ -366,7 +366,12 @@
                     </div>
                     <span class="text-[11px] sm:text-xs font-bold text-slate-100 mb-1 leading-snug line-clamp-2 break-words w-full px-1">${card.title || '（名称未設定）'}</span>
                     <div class="flex flex-wrap items-center justify-center gap-1 mt-0.5">
-                        <span class="text-[9px] sm:text-[10px] text-cyan-400/80 font-mono bg-slate-900/60 px-1 sm:px-1.5 py-0.5 rounded border border-slate-700/50 truncate max-w-[85px] sm:max-w-none">${card.id || ''}</span>
+                        <div class="flex items-stretch group/idbtn" onclick="event.stopPropagation()">
+                            <span class="text-[9px] sm:text-[10px] text-cyan-400/80 font-mono bg-slate-900/60 px-1 sm:px-1.5 py-0.5 rounded-l border border-slate-700/50 border-r-0 truncate max-w-[85px] sm:max-w-none flex items-center">${card.id || ''}</span>
+                            <button class="copy-id-btn bg-slate-800 hover:bg-slate-700 border border-slate-700/50 rounded-r px-1.5 text-slate-400 hover:text-cyan-400 transition-colors flex items-center justify-center focus:outline-none" data-id="${card.id || ''}" title="IDをコピー">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                            </button>
+                        </div>
                         ${isArchived ? '<span class="text-[9px] sm:text-[10px] text-purple-300 font-mono bg-purple-950/80 border border-purple-500/40 px-1 py-0.5 rounded">Archived</span>' : ''}
                         <span class="text-[9px] sm:text-[10px] text-slate-500 font-mono">${card.colorTheme}</span>
                     </div>
@@ -376,6 +381,18 @@
                 posSelect.onchange = (e) => {
                     changeCardPosition(idx, e.target.value);
                 };
+
+                const copyBtn = cardEl.querySelector('.copy-id-btn');
+                if (copyBtn) {
+                    copyBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        navigator.clipboard.writeText(copyBtn.getAttribute('data-id')).then(() => {
+                            const origHtml = copyBtn.innerHTML;
+                            copyBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-400"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+                            setTimeout(() => { copyBtn.innerHTML = origHtml; }, 1500);
+                        });
+                    };
+                }
 
                 cardEl.onclick = () => openEditForm(idx);
                 grid.appendChild(cardEl);
