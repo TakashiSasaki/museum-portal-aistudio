@@ -451,6 +451,88 @@ body {
     filter: drop-shadow(0 0 6px white) drop-shadow(0 0 12px currentColor);
 }
 
+/* --- カードのロード中（スケルトン）表示 --- */
+@keyframes cosmicSkeletonPulse {
+    0%, 100% {
+        opacity: 0.45;
+        border-color: rgba(255, 255, 255, 0.08);
+    }
+    50% {
+        opacity: 0.85;
+        border-color: rgba(103, 232, 249, 0.25);
+    }
+}
+
+@keyframes plasmaSkeletonPulse {
+    0%, 100% {
+        opacity: 0.35;
+        transform: scale(0.96);
+        box-shadow: 0 0 12px rgba(103, 232, 249, 0.15), inset 0 0 10px rgba(0, 0, 0, 0.6);
+    }
+    50% {
+        opacity: 0.75;
+        transform: scale(1.02);
+        box-shadow: 0 0 20px rgba(103, 232, 249, 0.35), inset 0 0 10px rgba(0, 0, 0, 0.4);
+    }
+}
+
+@keyframes skeletonBarShimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.cosmic-card.is-loading {
+    animation: cosmicSkeletonPulse 2.2s ease-in-out infinite;
+    cursor: default;
+    pointer-events: none;
+    user-select: none;
+}
+
+.cosmic-card.is-loading .plasma-sphere {
+    animation: plasmaSkeletonPulse 2.2s ease-in-out infinite;
+    background: radial-gradient(circle, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+    border-color: rgba(103, 232, 249, 0.2);
+    color: transparent;
+}
+
+.cosmic-card.is-loading .plasma-sphere::after {
+    opacity: 0.3;
+}
+
+.cosmic-card.is-loading .card-bookmark-btn {
+    display: none !important;
+}
+
+.cosmic-card.is-loading .card-title-text {
+    display: none !important;
+}
+
+.cosmic-card .skeleton-title-bar {
+    display: none;
+}
+
+.cosmic-card.is-loading .skeleton-title-bar {
+    display: block;
+    width: 65%;
+    max-width: 80px;
+    height: 10px;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, rgba(51, 65, 85, 0.4) 0%, rgba(100, 116, 139, 0.6) 50%, rgba(51, 65, 85, 0.4) 100%);
+    background-size: 200% 100%;
+    animation: skeletonBarShimmer 2.2s ease-in-out infinite;
+}
+
+@media (min-width: 640px) {
+    .cosmic-card.is-loading .skeleton-title-bar {
+        max-width: 100px;
+        height: 12px;
+    }
+}
+
 /* --- 共通: ポータルグリッドのレスポンシブ設定 --- */
 #portal-grid {
     align-items: stretch;

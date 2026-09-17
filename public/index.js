@@ -986,6 +986,8 @@ document.addEventListener('DOMContentLoaded', () => {
         slotElement.classList.add('invisible');
         slotElement.classList.remove('visible');
         slotElement.classList.add('default-text-color');
+        slotElement.classList.add('is-loading');
+        slotElement.setAttribute('aria-busy', 'true');
         delete slotElement.dataset.cardId;
         slotElement.style.removeProperty('--card-glow-color');
         slotElement.style.removeProperty('--card-glow-rgb');
@@ -1005,7 +1007,7 @@ document.addEventListener('DOMContentLoaded', () => {
             iconContainer.innerHTML = defaultIconSvg;
         }
 
-        const spanElement = slotElement.querySelector('span');
+        const spanElement = slotElement.querySelector('.card-title-text') || slotElement.querySelector('span');
         if (spanElement) {
             spanElement.classList.remove('text-slate-500');
             spanElement.classList.add('text-slate-200');
@@ -1034,6 +1036,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             slotElement.classList.remove('invisible');
             slotElement.classList.add('visible');
+            slotElement.classList.remove('is-loading');
+            slotElement.removeAttribute('aria-busy');
             slotElement.href = defaultCard.url;
             slotElement.dataset.cardId = defaultCard.id;
 
@@ -1050,7 +1054,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.dataset.cardId = defaultCard.id;
             }
 
-            const spanElement = slotElement.querySelector('span');
+            const spanElement = slotElement.querySelector('.card-title-text') || slotElement.querySelector('span');
             if (spanElement) {
                 spanElement.innerHTML = defaultCard.title;
             }
@@ -1290,6 +1294,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Make the slot visible since it has data
                 existingLink.classList.remove('invisible');
                 existingLink.classList.add('visible');
+                existingLink.classList.remove('is-loading');
+                existingLink.removeAttribute('aria-busy');
 
                 // Apply CSS variables for the color theme
                 if (cardData.colorTheme && themeMap[cardData.colorTheme]) {
