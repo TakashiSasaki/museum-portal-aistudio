@@ -98,22 +98,22 @@ async function runBookmarksTest() {
     const itemId = await page.evaluate(el => el.getAttribute('data-bookmark-item-id'), bookmarkItems[0]);
     assert.equal(itemId, slot1CardId, `Item data-bookmark-item-id must be ${slot1CardId}`);
 
-    // Verify Document ID badge is displayed inside the bookmark item
+    // Verify Document ID badge is NOT displayed inside the bookmark item
     const idBadgeText = await page.evaluate(el => {
         const badges = Array.from(el.querySelectorAll('span'));
         const badgeEl = badges.find(s => s.textContent.includes('ID:'));
         return badgeEl ? badgeEl.textContent.trim() : null;
     }, bookmarkItems[0]);
-    assert.equal(idBadgeText, `ID: ${slot1CardId}`, `Bookmark item must display the document ID badge "ID: ${slot1CardId}"`);
+    assert.equal(idBadgeText, null, 'Bookmark item must NOT display the document ID badge');
 
     const itemTitle = await page.evaluate(el => el.querySelector('h2').textContent.trim(), bookmarkItems[0]);
     const expectedTitle = (stored[0].title || '').replace(/<br\s*\/?>/gi, ' ').trim();
     assert.equal(itemTitle, expectedTitle, `Item title must match card title: expected "${expectedTitle}", got "${itemTitle}"`);
 
-    // Step 6: Test back navigation via back button
+    // Step 6: Test back navigation via header back button
     console.log('[test-bookmarks] 6. Testing return to portal');
-    const backBtn = await page.$('#bookmarks-back-button');
-    assert.ok(backBtn, '#bookmarks-back-button must exist');
+    const backBtn = await page.$('#header-back-button');
+    assert.ok(backBtn, '#header-back-button must exist');
     await backBtn.click();
     await page.waitForTimeout(300);
 
@@ -140,9 +140,8 @@ async function runBookmarksTest() {
 
     // Step 8: Remove bookmark from within bookmarks view with confirmation dialog
     console.log(`[test-bookmarks] 8. Triggering bookmark removal from bookmarks view by card ID: ${slot1CardId}`);
-    const removeBtn = await page.$(`.remove-bookmark-btn[data-card-id="${slot1CardId}"]`);
-    assert.ok(removeBtn, `Remove bookmark button with data-card-id="${slot1CardId}" must exist`);
-    await removeBtn.click();
+    await page.waitForSelector(`.remove-bookmark-btn[data-card-id="${slot1CardId}"]`, { state: 'visible' });
+    await page.click(`.remove-bookmark-btn[data-card-id="${slot1CardId}"]`);
     await page.waitForTimeout(300);
 
     // Verify confirmation dialog is visible

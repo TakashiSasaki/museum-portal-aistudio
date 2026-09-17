@@ -53,13 +53,22 @@ async function runArchivesTest() {
     });
     assert.equal(isArchivesVisible, true, '#archives-view should be visible on /archives');
 
-    const pageTitle = await page.evaluate(() => document.getElementById('header-main-title')?.textContent.trim());
-    assert.equal(pageTitle, 'アーカイブ', `Header main title should be 'アーカイブ', got '${pageTitle}'`);
+    const isHeaderMainTitleHidden = await page.evaluate(() => {
+        const title = document.getElementById('header-main-title');
+        return title && title.classList.contains('hidden');
+    });
+    assert.equal(isHeaderMainTitleHidden, true, 'Header main title should be hidden in archives view');
 
-    // Step 3: Check return to portal via back button
-    console.log('[test-archives] 3. Testing back button');
-    const backBtn = await page.$('#archives-back-button');
-    assert.ok(backBtn, '#archives-back-button must exist');
+    const isHeaderBackBtnVisible = await page.evaluate(() => {
+        const btn = document.getElementById('header-back-button');
+        return btn && !btn.classList.contains('hidden');
+    });
+    assert.equal(isHeaderBackBtnVisible, true, '#header-back-button should be visible in archives view');
+
+    // Step 3: Check return to portal via header back button
+    console.log('[test-archives] 3. Testing header back button');
+    const backBtn = await page.$('#header-back-button');
+    assert.ok(backBtn, '#header-back-button must exist');
     await backBtn.click();
     await page.waitForTimeout(300);
 
@@ -87,6 +96,11 @@ async function runArchivesTest() {
 
     // Step 5: Test real Firestore archive end-to-end flow with card1
     console.log('[test-archives] 5. Testing real Firestore archived card behavior');
+    await page.evaluate(async () => {
+        await firebase.firestore().collection('portalCards').doc('card1').update({ position: null });
+    });
+    await page.waitForTimeout(300);
+
     const initialBadgeCount = await page.evaluate(() => {
         const b = document.getElementById('header-archives-badge');
         return b && !b.classList.contains('hidden') ? Number(b.textContent.trim()) : 0;
@@ -105,12 +119,12 @@ async function runArchivesTest() {
     const archivedItem = await page.$('[data-archive-item-id="card1"]');
     assert.ok(archivedItem, 'card1 should be rendered in #archives-list-container with data-archive-item-id="card1"');
 
-    // Verify card1 has "Archived" badge and Document ID badge
+    // Verify card1 has no Archived badge and Document ID badge is not present
     const badgeTexts = await page.evaluate(el => {
         return Array.from(el.querySelectorAll('span')).map(s => s.textContent.trim());
     }, archivedItem);
-    assert.ok(badgeTexts.some(t => t.includes('Archived')), 'Card should display Archived badge');
-    assert.ok(badgeTexts.some(t => t.includes('ID: card1')), 'Card should display ID: card1 badge');
+    assert.ok(!badgeTexts.some(t => t.includes('Archived')), 'Card should NOT display Archived badge');
+    assert.ok(!badgeTexts.some(t => t.includes('ID: card1')), 'Card should NOT display ID: card1 badge');
 
     // Verify header archives badge increases by 1
     const archivesBadgeText = await page.evaluate(() => {

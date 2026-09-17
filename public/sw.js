@@ -1,6 +1,7 @@
 // --- Service Worker loader for Museum Portal ---
 // Every imported script URL is versioned because some portal entry points use
 // the browser default updateViaCache policy for Service Worker imports.
+// Version: 20260917-v44-network-first-01
 importScripts('/sw-core-v44.js');
 importScripts('/sw-imaginedeck-generation-v45.js');
 importScripts('/sw-imaginedeck-network-v36.js');

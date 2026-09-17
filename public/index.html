@@ -34,7 +34,7 @@
     <meta name="twitter:description" content="果てしなき知の探求、その入り口。愛媛大学ミュージアムでの企画展、愛媛松山ミュージアムストリートのイベント情報も発信中。">
     <meta name="twitter:image" content="https://portal.museum.ehime-u.ac.jp/portal-thumbnail.png">
 
-    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="index.css?v=20260917_09">
 
     <!-- Firebase SDK -->
     <script src="/__/firebase/8.10.1/firebase-app.js"></script>
@@ -87,6 +87,21 @@
         <h1 id="header-main-title" class="text-lg sm:text-3xl font-bold tracking-normal sm:tracking-[0.2em] whitespace-nowrap text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">
             ミュージアム・ポータル
         </h1>
+
+        <!-- 2b. サブビュー表示時の「ポータルへ戻る」ボタン (header-main-title位置に代替表示) -->
+        <button
+            type="button"
+            id="header-back-button"
+            class="hidden inline-flex items-center gap-1.5 sm:gap-2 px-4 py-1.5 sm:py-2 rounded-full bg-slate-900/80 hover:bg-slate-800/90 border border-cyan-500/50 hover:border-cyan-400 text-xs sm:text-sm font-medium text-cyan-200 hover:text-white transition-all cursor-pointer shadow-[0_0_12px_rgba(6,182,212,0.25)] group"
+            aria-label="ポータルへ戻る"
+            title="ポータルへ戻る"
+        >
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400 group-hover:text-cyan-200 transition-colors">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            <span>ポータルへ戻る</span>
+        </button>
 
         <!-- 3. 果てしなき知の探求、その入り口。 (スローガン・シアン) -->
         <p class="text-[10px] sm:text-[14px] mt-1 sm:mt-4 font-light text-cyan-300 tracking-normal sm:tracking-[0.15em] drop-shadow-[0_0_8px_rgba(103,232,249,0.3)] opacity-95 whitespace-nowrap slogan-text">
@@ -227,23 +242,7 @@
     </main>
 
     <!-- Highlights View (SPA Route: /highlights) -->
-    <section id="highlights-view" class="hidden w-full max-w-md landscape:max-w-4xl sm:max-w-xl md:max-w-4xl px-4 relative z-10 flex-1 min-h-0 flex flex-col" aria-label="ハイライト一覧">
-        <!-- Top bar: Back to Portal button + Count -->
-        <div class="flex items-center justify-between w-full mb-2 sm:mb-3 pb-2 border-b border-slate-700/60 flex-shrink-0">
-            <button
-                type="button"
-                id="highlights-back-button"
-                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/70 border border-slate-700/60 hover:border-amber-400 hover:bg-slate-800/80 text-xs font-medium text-slate-300 hover:text-amber-200 transition-all cursor-pointer group"
-            >
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 text-slate-400 group-hover:text-amber-300 transition-colors">
-                    <line x1="19" y1="12" x2="5" y2="12"></line>
-                    <polyline points="12 19 5 12 12 5"></polyline>
-                </svg>
-                <span>ポータルへ戻る</span>
-            </button>
-            <span id="highlights-count-text" class="text-xs text-amber-300 font-medium">0件のハイライト</span>
-        </div>
-
+    <section id="highlights-view" class="hidden w-full max-w-md landscape:max-w-4xl sm:max-w-xl md:max-w-4xl px-4 relative z-10 flex-1 min-h-0 flex flex-col pt-1" aria-label="ハイライト一覧">
         <!-- Scrollable Highlights List Container -->
         <div id="highlights-list-container" class="flex-1 min-h-0 overflow-y-auto space-y-2 pr-1 custom-scrollbar pb-2">
             <!-- Dynamically populated via index.js -->
@@ -251,23 +250,7 @@
     </section>
 
     <!-- Bookmarks View (SPA Route: /bookmarks) -->
-    <section id="bookmarks-view" class="hidden w-full max-w-md landscape:max-w-4xl sm:max-w-xl md:max-w-4xl px-4 relative z-10 flex-1 min-h-0 flex flex-col" aria-label="ブックマーク一覧">
-        <!-- Top bar: Back to Portal button + Count -->
-        <div class="flex items-center justify-between w-full mb-2 sm:mb-3 pb-2 border-b border-slate-700/60 flex-shrink-0">
-            <button
-                type="button"
-                id="bookmarks-back-button"
-                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/70 border border-slate-700/60 hover:border-cyan-400 hover:bg-slate-800/80 text-xs font-medium text-slate-300 hover:text-cyan-200 transition-all cursor-pointer group"
-            >
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 text-slate-400 group-hover:text-cyan-300 transition-colors">
-                    <line x1="19" y1="12" x2="5" y2="12"></line>
-                    <polyline points="12 19 5 12 12 5"></polyline>
-                </svg>
-                <span>ポータルへ戻る</span>
-            </button>
-            <span id="bookmarks-count-text" class="text-xs text-cyan-300 font-medium">0件のブックマーク</span>
-        </div>
-
+    <section id="bookmarks-view" class="hidden w-full max-w-md landscape:max-w-4xl sm:max-w-xl md:max-w-4xl px-4 relative z-10 flex-1 min-h-0 flex flex-col pt-1" aria-label="ブックマーク一覧">
         <!-- Scrollable Bookmarks List Container -->
         <div id="bookmarks-list-container" class="flex-1 min-h-0 overflow-y-auto space-y-2 pr-1 custom-scrollbar pb-2">
             <!-- Dynamically populated via index.js -->
@@ -275,23 +258,7 @@
     </section>
 
     <!-- Archives View (SPA Route: /archives) -->
-    <section id="archives-view" class="hidden w-full max-w-md landscape:max-w-4xl sm:max-w-xl md:max-w-4xl px-4 relative z-10 flex-1 min-h-0 flex flex-col" aria-label="アーカイブ一覧">
-        <!-- Top bar: Back to Portal button + Count -->
-        <div class="flex items-center justify-between w-full mb-2 sm:mb-3 pb-2 border-b border-slate-700/60 flex-shrink-0">
-            <button
-                type="button"
-                id="archives-back-button"
-                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/70 border border-slate-700/60 hover:border-cyan-400 hover:bg-slate-800/80 text-xs font-medium text-slate-300 hover:text-cyan-200 transition-all cursor-pointer group"
-            >
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 text-slate-400 group-hover:text-cyan-300 transition-colors">
-                    <line x1="19" y1="12" x2="5" y2="12"></line>
-                    <polyline points="12 19 5 12 12 5"></polyline>
-                </svg>
-                <span>ポータルへ戻る</span>
-            </button>
-            <span id="archives-count-text" class="text-xs text-purple-300 font-medium">0件のアーカイブ</span>
-        </div>
-
+    <section id="archives-view" class="hidden w-full max-w-md landscape:max-w-4xl sm:max-w-xl md:max-w-4xl px-4 relative z-10 flex-1 min-h-0 flex flex-col pt-1" aria-label="アーカイブ一覧">
         <!-- Scrollable Archives List Container -->
         <div id="archives-list-container" class="flex-1 min-h-0 overflow-y-auto space-y-2 pr-1 custom-scrollbar pb-2">
             <!-- Dynamically populated via index.js -->
@@ -306,7 +273,7 @@
                 target="_blank"
                 rel="noopener noreferrer"
                 id="footer-contact-link"
-                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/60 border border-slate-700/60 hover:border-cyan-500/60 hover:bg-slate-800/80 text-[11px] font-normal text-slate-300 hover:text-cyan-200 backdrop-blur-md transition-all duration-200 cursor-pointer shadow-sm whitespace-nowrap group"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/60 hover:bg-slate-800/80 text-[11px] font-normal text-slate-300 hover:text-cyan-200 backdrop-blur-md transition-all duration-200 cursor-pointer shadow-sm whitespace-nowrap group"
                 title="愛媛大学 お問い合わせ"
             >
                 <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="w-3 h-3 text-slate-400 group-hover:text-cyan-300 transition-colors">
@@ -317,6 +284,22 @@
             </a>
         </div>
     </footer>
+
+    <!-- Cache Clear & Reload Button (Bottom Left Corner: Reload/Refresh Pictogram) -->
+    <button
+        id="cache-reload-button"
+        class="cache-reload-button group"
+        type="button"
+        aria-label="強制キャッシュクリアと再読み込み"
+        title="強制キャッシュクリア＆再読み込み"
+    >
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-slate-400 group-hover:text-cyan-300 group-[.reloading]:text-cyan-200 transition-colors">
+            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+            <path d="M21 3v5h-5" />
+            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+            <path d="M8 16H3v5" />
+        </svg>
+    </button>
 
     <!-- Admin Trigger Button (Bottom Right Corner: Tool Pictogram, 2s Long-Press) -->
     <button
@@ -388,6 +371,6 @@
         </div>
     </div>
 
-    <script src="index.js" defer></script>
+    <script src="index.js?v=20260917_08" defer></script>
 </body>
 </html>

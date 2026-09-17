@@ -113,6 +113,10 @@ test('public/index.html top-page structural and responsive contract', () => {
         'index.html must contain #admin-trigger-button for bottom-right tool pictogram'
     );
     assert.ok(
+        html.includes('id="cache-reload-button"'),
+        'index.html must contain #cache-reload-button for bottom-left reload pictogram'
+    );
+    assert.ok(
         !html.includes('title="管理者ツール'),
         'admin-trigger-button must not have a title balloon attribute'
     );
@@ -177,6 +181,10 @@ test('public/index.css layout and circular icon contracts', () => {
     assert.ok(
         css.includes('.admin-trigger-button'),
         'index.css must define .admin-trigger-button styles'
+    );
+    assert.ok(
+        css.includes('.cache-reload-button'),
+        'index.css must define .cache-reload-button styles'
     );
 });
 

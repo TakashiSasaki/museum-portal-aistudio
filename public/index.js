@@ -319,6 +319,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const bookmarksBtn = document.getElementById('header-bookmarks-button');
         const archivesBtn = document.getElementById('header-archives-button');
         const pageTitle = document.getElementById('header-main-title');
+        const headerBackButton = document.getElementById('header-back-button');
         const slogan = document.querySelector('.slogan-text');
 
         if (isHighlightsRoute()) {
@@ -343,10 +344,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 highlightsBtn.classList.add('active-bookmark-route');
             }
             if (pageTitle) {
-                if (!pageTitle.hasAttribute('data-original-title')) {
-                    pageTitle.setAttribute('data-original-title', pageTitle.textContent.trim());
-                }
-                pageTitle.textContent = 'ハイライト';
+                pageTitle.classList.add('hidden');
+            }
+            if (headerBackButton) {
+                headerBackButton.classList.remove('hidden');
             }
             if (slogan) {
                 slogan.classList.add('opacity-0', 'pointer-events-none');
@@ -374,10 +375,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 bookmarksBtn.classList.add('active-bookmark-route');
             }
             if (pageTitle) {
-                if (!pageTitle.hasAttribute('data-original-title')) {
-                    pageTitle.setAttribute('data-original-title', pageTitle.textContent.trim());
-                }
-                pageTitle.textContent = 'ブックマーク';
+                pageTitle.classList.add('hidden');
+            }
+            if (headerBackButton) {
+                headerBackButton.classList.remove('hidden');
             }
             if (slogan) {
                 slogan.classList.add('opacity-0', 'pointer-events-none');
@@ -405,10 +406,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 archivesBtn.classList.add('active-bookmark-route');
             }
             if (pageTitle) {
-                if (!pageTitle.hasAttribute('data-original-title')) {
-                    pageTitle.setAttribute('data-original-title', pageTitle.textContent.trim());
-                }
-                pageTitle.textContent = 'アーカイブ';
+                pageTitle.classList.add('hidden');
+            }
+            if (headerBackButton) {
+                headerBackButton.classList.remove('hidden');
             }
             if (slogan) {
                 slogan.classList.add('opacity-0', 'pointer-events-none');
@@ -434,8 +435,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (archivesBtn) {
                 archivesBtn.classList.remove('active-bookmark-route');
             }
-            if (pageTitle && pageTitle.hasAttribute('data-original-title')) {
-                pageTitle.textContent = pageTitle.getAttribute('data-original-title');
+            if (pageTitle) {
+                pageTitle.classList.remove('hidden');
+            }
+            if (headerBackButton) {
+                headerBackButton.classList.add('hidden');
             }
             if (slogan) {
                 slogan.classList.remove('opacity-0', 'pointer-events-none');
@@ -458,13 +462,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderHighlightsList() {
         const container = document.getElementById('highlights-list-container');
-        const countText = document.getElementById('highlights-count-text');
         if (!container) return;
 
         const highlightsCards = getHighlightsCards();
-        if (countText) {
-            countText.textContent = `${highlightsCards.length}件のハイライト`;
-        }
 
         if (highlightsCards.length === 0) {
             container.innerHTML = `
@@ -517,7 +517,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const isBookmarked = bookmarkedIdSet.has(cardId);
 
             html += `
-                <div class="cosmic-card p-3 sm:p-4 flex items-center justify-between gap-3 text-left w-full group relative" data-highlight-item-id="${cardId}">
+                <div class="cosmic-card p-3 sm:p-4 flex items-center justify-between gap-3 text-left w-full group relative" data-highlight-item-id="${cardId}" style="--card-glow-color: ${theme.hex}; --card-glow-rgb: ${theme.rgb};">
                     <a href="${targetUrl}" ${isExternal ? 'target="_blank" rel="noopener noreferrer"' : ''} class="flex items-center gap-3 flex-1 min-w-0">
                         <div class="plasma-sphere ${theme.grad ? 'bg-gradient-to-br ' + theme.grad : 'bg-slate-700'} w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-full">
                             ${iconSvg}
@@ -532,7 +532,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
                         <button
                             type="button"
-                            class="highlight-bookmark-btn p-1.5 rounded-lg border transition-all cursor-pointer ${isBookmarked ? `bg-${colorTheme}-950/60 border-${colorTheme}-500/60 text-${colorTheme}-300` : `bg-slate-800/70 border-slate-700/60 text-slate-400 hover:text-${colorTheme}-300 hover:border-${colorTheme}-500/50`}"
+                            class="highlight-bookmark-btn p-1.5 rounded-lg border-none transition-all cursor-pointer ${isBookmarked ? 'is-bookmarked' : 'bg-slate-800/70 text-slate-400'}"
                             data-card-id="${cardId}"
                             aria-label="${cleanTitle} (ID: ${cardId}) のブックマークを切り替え"
                             title="${isBookmarked ? 'ブックマーク解除' : 'ブックマークに追加'} (ID: ${cardId})"
@@ -566,13 +566,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderArchivesList() {
         const container = document.getElementById('archives-list-container');
-        const countText = document.getElementById('archives-count-text');
         if (!container) return;
 
         const archivedCards = allLoadedCards.filter(c => c.position === 'archived');
-        if (countText) {
-            countText.textContent = `${archivedCards.length}件のアーカイブ`;
-        }
 
         if (archivedCards.length === 0) {
             container.innerHTML = `
@@ -627,37 +623,20 @@ document.addEventListener('DOMContentLoaded', () => {
             const isBookmarked = bookmarkedIdSet.has(cardId);
 
             html += `
-                <div class="cosmic-card p-3 sm:p-4 flex items-center justify-between gap-3 text-left w-full group relative" data-archive-item-id="${cardId}">
+                <div class="cosmic-card p-3 sm:p-4 flex items-center justify-between gap-3 text-left w-full group relative" data-archive-item-id="${cardId}" style="--card-glow-color: ${theme.hex}; --card-glow-rgb: ${theme.rgb};">
                     <a href="${targetUrl}" ${isExternal ? 'target="_blank" rel="noopener noreferrer"' : ''} class="flex items-center gap-3 flex-1 min-w-0">
                         <div class="plasma-sphere ${theme.grad ? 'bg-gradient-to-br ' + theme.grad : 'bg-slate-700'} w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-full">
                             ${iconSvg}
                         </div>
                         <div class="flex-1 min-w-0">
-                            <div class="flex items-center gap-2 mb-0.5 flex-wrap">
-                                <h2 class="text-sm font-medium text-slate-100 group-hover:text-cyan-200 transition-colors truncate">${cleanTitle}</h2>
-                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-purple-950/80 text-purple-300 border border-purple-500/40 tracking-wider flex-shrink-0">Archived</span>
-                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-slate-900/80 text-slate-400 border border-slate-700/50 tracking-wider flex-shrink-0" title="カードID (FirestoreドキュメントID)">ID: ${cardId}</span>
-                            </div>
+                            <h2 class="text-sm font-medium text-slate-100 group-hover:text-cyan-200 transition-colors truncate mb-0.5">${cleanTitle}</h2>
                             <span class="text-[11px] text-slate-400 truncate block mt-0.5">${targetUrl}</span>
                         </div>
                     </a>
                     <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-                        <a
-                            href="${targetUrl}"
-                            ${isExternal ? 'target="_blank" rel="noopener noreferrer"' : ''}
-                            class="px-2.5 py-1.5 rounded-lg bg-cyan-950/60 hover:bg-cyan-900/90 border border-cyan-500/40 text-cyan-300 hover:text-white text-xs flex items-center gap-1 transition-all cursor-pointer"
-                            title="ページを開く"
-                        >
-                            <span>開く</span>
-                            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                                <polyline points="15 3 21 3 21 9"></polyline>
-                                <line x1="10" y1="14" x2="21" y2="3"></line>
-                            </svg>
-                        </a>
                         <button
                             type="button"
-                            class="archive-bookmark-btn p-1.5 rounded-lg border transition-all cursor-pointer ${isBookmarked ? 'bg-amber-950/60 border-amber-500/60 text-amber-300' : 'bg-slate-800/70 border-slate-700/60 text-slate-400 hover:text-cyan-300 hover:border-cyan-500/50'}"
+                            class="archive-bookmark-btn p-1.5 rounded-lg border-none transition-all cursor-pointer ${isBookmarked ? 'is-bookmarked' : 'bg-slate-800/70 text-slate-400'}"
                             data-card-id="${cardId}"
                             aria-label="${cleanTitle} (ID: ${cardId}) のブックマークを切り替え"
                             title="${isBookmarked ? 'ブックマーク解除' : 'ブックマークに追加'} (ID: ${cardId})"
@@ -691,13 +670,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderBookmarksList() {
         const container = document.getElementById('bookmarks-list-container');
-        const countText = document.getElementById('bookmarks-count-text');
         if (!container) return;
 
         const bookmarks = getStoredBookmarks();
-        if (countText) {
-            countText.textContent = `${bookmarks.length}件のブックマーク`;
-        }
 
         if (bookmarks.length === 0) {
             container.innerHTML = `
@@ -747,43 +722,27 @@ document.addEventListener('DOMContentLoaded', () => {
             const isExternal = targetUrl.startsWith('http');
 
             html += `
-                <div class="cosmic-card p-3 sm:p-4 flex items-center justify-between gap-3 text-left w-full group relative" data-bookmark-item-id="${cardId}" data-bookmark-item-slot="${bm.slot || ''}">
+                <div class="cosmic-card p-3 sm:p-4 flex items-center justify-between gap-3 text-left w-full group relative" data-bookmark-item-id="${cardId}" data-bookmark-item-slot="${bm.slot || ''}" style="--card-glow-color: ${theme.hex}; --card-glow-rgb: ${theme.rgb};">
                     <a href="${targetUrl}" ${isExternal ? 'target="_blank" rel="noopener noreferrer"' : ''} class="flex items-center gap-3 flex-1 min-w-0">
                         <div class="plasma-sphere ${theme.grad ? 'bg-gradient-to-br ' + theme.grad : 'bg-slate-700'} w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-full">
                             ${iconSvg}
                         </div>
                         <div class="flex-1 min-w-0">
-                            <div class="flex items-center gap-2 mb-0.5 flex-wrap">
-                                <h2 class="text-sm font-medium text-slate-100 group-hover:text-cyan-200 transition-colors truncate">${cleanTitle}</h2>
-                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-cyan-950/80 text-cyan-300 border border-cyan-500/40 tracking-wider flex-shrink-0" title="カードID (FirestoreドキュメントID)">ID: ${cardId}</span>
-                            </div>
+                            <h2 class="text-sm font-medium text-slate-100 group-hover:text-cyan-200 transition-colors truncate mb-0.5">${cleanTitle}</h2>
                             <span class="text-[11px] text-slate-400 truncate block mt-0.5">${targetUrl}</span>
                         </div>
                     </a>
                     <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-                        <a
-                            href="${targetUrl}"
-                            ${isExternal ? 'target="_blank" rel="noopener noreferrer"' : ''}
-                            class="px-2.5 py-1.5 rounded-lg bg-cyan-950/60 hover:bg-cyan-900/90 border border-cyan-500/40 text-cyan-300 hover:text-white text-xs flex items-center gap-1 transition-all cursor-pointer"
-                            title="ページを開く"
-                        >
-                            <span>開く</span>
-                            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                                <polyline points="15 3 21 3 21 9"></polyline>
-                                <line x1="10" y1="14" x2="21" y2="3"></line>
-                            </svg>
-                        </a>
                         <button
                             type="button"
-                            class="remove-bookmark-btn p-1.5 rounded-lg bg-slate-800/70 hover:bg-rose-950/60 border border-slate-700/60 hover:border-rose-500/50 text-slate-400 hover:text-rose-300 transition-all cursor-pointer"
+                            class="remove-bookmark-btn is-bookmarked p-1.5 rounded-lg border-none transition-all cursor-pointer"
                             data-card-id="${cardId}"
                             data-slot="${bm.slot || ''}"
                             data-title="${cleanTitle.replace(/"/g, '&quot;')}"
                             aria-label="${cleanTitle} (ID: ${cardId}) のブックマークを解除"
                             title="ブックマーク解除 (ID: ${cardId})"
                         >
-                            <svg class="w-4 h-4 text-amber-400 hover:text-rose-400 transition-colors" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.75">
+                            <svg class="w-4 h-4 transition-colors" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.75">
                                 <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
                             </svg>
                         </button>
@@ -1037,7 +996,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Wire up back button in highlights view
+    // Wire up header back button
+    const headerBackBtn = document.getElementById('header-back-button');
+    if (headerBackBtn) {
+        headerBackBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            navigateTo('/');
+        });
+    }
+
+    // Wire up back button in highlights view (if present)
     const highlightsBackBtn = document.getElementById('highlights-back-button');
     if (highlightsBackBtn) {
         highlightsBackBtn.addEventListener('click', (e) => {
@@ -1080,7 +1048,38 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize SPA route based on initial URL
     renderRoute();
 
-    if (typeof firebase === 'undefined') return;
+    function processUtmSourceBookmark() {
+        const params = new URLSearchParams(window.location.search);
+        const utmSource = params.get('utm_source');
+        if (utmSource) {
+            // Force navigate to top page if on another route
+            if (isBookmarksRoute() || isHighlightsRoute() || isArchivesRoute()) {
+                navigateTo('/');
+            }
+            
+            const bookmarks = getStoredBookmarks();
+            const alreadyBookmarked = bookmarks.some(b => (b.id && b.id === utmSource) || (b.cardId && b.cardId === utmSource));
+            
+            if (!alreadyBookmarked) {
+                // Ensure card info exists before bookmarking to avoid saving empty/null entries
+                const info = getCardInfoByIdOrSlot(utmSource, null);
+                if (info) {
+                    toggleCardBookmark(utmSource, null);
+                }
+            }
+            
+            // Clean up URL to prevent re-triggering on reload
+            params.delete('utm_source');
+            const newSearch = params.toString();
+            const newUrl = window.location.pathname + (newSearch ? '?' + newSearch : '') + window.location.hash;
+            window.history.replaceState(null, '', newUrl);
+        }
+    }
+
+    if (typeof firebase === 'undefined') {
+        processUtmSourceBookmark();
+        return;
+    }
     const db = firebase.firestore();
 
     // Try to get data from cache first for fast loading
@@ -1101,6 +1100,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }).catch((error) => {
         console.log("Failed to load from server:", error);
+    }).finally(() => {
+        processUtmSourceBookmark();
     });
 
     function renderPortalCards(querySnapshot) {
@@ -1262,8 +1263,54 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker
       .register("sw.js")
-      .then((reg) => console.log("Service worker registered.", reg))
+      .then((reg) => {
+        console.log("Service worker registered.", reg);
+        reg.update();
+      })
       .catch((err) => console.log("Service worker registration failed: ", err));
+  });
+}
+
+// Cache Clear & Hard Reload (Bottom-left refresh pictogram)
+const cacheReloadBtn = document.getElementById('cache-reload-button');
+if (cacheReloadBtn) {
+  let isReloading = false;
+  cacheReloadBtn.addEventListener('click', async () => {
+    if (isReloading) return;
+    isReloading = true;
+    cacheReloadBtn.classList.add('reloading');
+    cacheReloadBtn.setAttribute('aria-busy', 'true');
+    cacheReloadBtn.disabled = true;
+
+    try {
+      // 1. Delete all CacheStorage entries
+      if ('caches' in window) {
+        const cacheKeys = await caches.keys();
+        await Promise.all(cacheKeys.map((key) => caches.delete(key)));
+        console.log('[CacheReload] Cleared caches:', cacheKeys);
+      }
+
+      // 2. Unregister all service workers
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map((reg) => reg.unregister()));
+        console.log('[CacheReload] Unregistered service workers:', registrations.length);
+      }
+
+      // 3. Clear session storage
+      try {
+        sessionStorage.clear();
+      } catch (e) {
+        // Ignore session storage error
+      }
+    } catch (err) {
+      console.warn('[CacheReload] Cache cleanup error:', err);
+    }
+
+    // 4. Force reload with cache-busting timestamp
+    const targetUrl = new URL(window.location.href);
+    targetUrl.searchParams.set('_t', Date.now().toString());
+    window.location.replace(targetUrl.href);
   });
 }
 

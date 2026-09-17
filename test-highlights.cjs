@@ -70,12 +70,20 @@ async function runHighlightsTest() {
     });
     assert.equal(isHighlightsVisible, true, '#highlights-view should be visible on /highlights');
 
-    const pageTitle = await page.evaluate(() => document.getElementById('header-main-title')?.textContent.trim());
-    assert.equal(pageTitle, 'ハイライト', `Header main title should be 'ハイライト', got '${pageTitle}'`);
+    const isHeaderMainTitleHidden = await page.evaluate(() => {
+        const title = document.getElementById('header-main-title');
+        return title && title.classList.contains('hidden');
+    });
+    assert.equal(isHeaderMainTitleHidden, true, 'Header main title should be hidden in highlights view');
 
-    const countText = await page.evaluate(() => document.getElementById('highlights-count-text')?.textContent.trim());
-    console.log('[test-highlights] Highlights count text:', countText);
-    assert.ok(countText.includes('ハイライト'), 'Highlights count text should mention ハイライト');
+    const isHeaderBackBtnVisible = await page.evaluate(() => {
+        const btn = document.getElementById('header-back-button');
+        return btn && !btn.classList.contains('hidden');
+    });
+    assert.equal(isHeaderBackBtnVisible, true, '#header-back-button should be visible in highlights view');
+
+    const countTextEl = await page.$('#highlights-count-text');
+    assert.equal(countTextEl, null, '#highlights-count-text should be removed from DOM');
 
     // Verify items in highlights list
     const itemsCount = await page.evaluate(() => {
@@ -84,10 +92,10 @@ async function runHighlightsTest() {
     console.log('[test-highlights] Rendered highlights items count:', itemsCount);
     assert.ok(itemsCount > 0, 'Highlights view should render at least 1 highlight card');
 
-    // Step 3: Check return to portal via back button
-    console.log('[test-highlights] 3. Testing back button');
-    const backBtn = await page.$('#highlights-back-button');
-    assert.ok(backBtn, '#highlights-back-button must exist');
+    // Step 3: Check return to portal via header back button
+    console.log('[test-highlights] 3. Testing header back button');
+    const backBtn = await page.$('#header-back-button');
+    assert.ok(backBtn, '#header-back-button must exist');
     await backBtn.click();
     await page.waitForTimeout(300);
 
@@ -110,13 +118,13 @@ async function runHighlightsTest() {
     });
     assert.equal(directViewVisible, true, '#highlights-view should be visible on direct navigation');
 
-    // Step 5: Test clicking logo/title returns to portal
-    console.log('[test-highlights] 5. Testing header logo/title click returns to portal');
-    const titleEl = await page.$('#header-main-title');
-    assert.ok(titleEl, '#header-main-title must exist');
-    await titleEl.click();
+    // Step 5: Test header back button returns to portal from direct navigation
+    console.log('[test-highlights] 5. Testing header back button returns to portal');
+    const headerBackBtn = await page.$('#header-back-button');
+    assert.ok(headerBackBtn, '#header-back-button must exist');
+    await headerBackBtn.click();
     await page.waitForTimeout(300);
-    assert.equal(new URL(page.url()).pathname, '/', 'Header title click should return to /');
+    assert.equal(new URL(page.url()).pathname, '/', 'Header back button click should return to /');
 
     assert.equal(pageErrors.length, 0, `Page errors encountered: ${JSON.stringify(pageErrors)}`);
 
