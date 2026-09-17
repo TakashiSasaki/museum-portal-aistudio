@@ -159,24 +159,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getCardInfoByIdOrSlot(cardId, slot) {
-        const numericSlot = slot ? Number(slot) : null;
-        // 1. Check in current active cards by position
-        if (numericSlot && currentCardsData[numericSlot]) {
-            return {
-                id: cardId || currentCardsData[numericSlot].id || `card${numericSlot}`,
-                ...currentCardsData[numericSlot]
-            };
-        }
-        // 2. Check in current active cards by ID
+        // 1. Check in current active cards by ID first
         if (cardId) {
             for (const key in currentCardsData) {
                 if (currentCardsData[key] && currentCardsData[key].id === cardId) {
                     return currentCardsData[key];
                 }
             }
-        }
-        // 3. Check in all loaded cards (including archived cards)
-        if (cardId) {
             const foundInAll = allLoadedCards.find(c => c.id === cardId);
             if (foundInAll) {
                 return {
@@ -184,16 +173,40 @@ document.addEventListener('DOMContentLoaded', () => {
                     ...foundInAll
                 };
             }
+            const defaultMatchById = defaultPortalCards.find(c => c.id === cardId);
+            if (defaultMatchById) {
+                return {
+                    id: cardId,
+                    ...defaultMatchById
+                };
+            }
         }
-        // 4. Check in default cards by ID or position
-        const defaultMatch = defaultPortalCards.find(c => (cardId && c.id === cardId) || (numericSlot && c.position === numericSlot));
-        if (defaultMatch) {
+
+        // 2. Check by position if slot is provided or cardId is a pure slot number
+        let numericSlot = slot ? Number(slot) : null;
+        if (!numericSlot && cardId && /^\d+$/.test(String(cardId))) {
+            numericSlot = Number(cardId);
+        }
+
+        if (numericSlot && currentCardsData[numericSlot]) {
             return {
-                id: cardId || defaultMatch.id,
-                ...defaultMatch
+                id: currentCardsData[numericSlot].id || `card${numericSlot}`,
+                ...currentCardsData[numericSlot]
             };
         }
-        // 5. Fallback to DOM slot
+
+        // 3. Check in default cards by position
+        if (numericSlot) {
+            const defaultMatchBySlot = defaultPortalCards.find(c => c.position === numericSlot);
+            if (defaultMatchBySlot) {
+                return {
+                    id: defaultMatchBySlot.id,
+                    ...defaultMatchBySlot
+                };
+            }
+        }
+
+        // 4. Fallback to DOM slot
         if (numericSlot) {
             const slotEl = portalGrid.querySelector(`[data-slot="${numericSlot}"]`);
             if (slotEl) {
@@ -684,7 +697,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <p class="text-sm font-medium text-slate-200 mb-1">ブックマークが登録されていません</p>
                     <p class="text-xs text-slate-400 max-w-xs mb-5 leading-relaxed">
-                        ポータル画面の各カード右上にあるブックマークアイコン（☆）をタップすると、よく使うコンテンツをここに保存できます。
+                        ポータル画面の各カード右上にあるブックマークアイコン（<svg viewBox="0 0 24 24" class="inline-block w-3.5 h-3.5 -mt-0.5 text-slate-300 align-middle" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>）をタップすると、よく使うコンテンツをここに保存できます。
                     </p>
                     <button
                         type="button"
@@ -843,6 +856,128 @@ document.addEventListener('DOMContentLoaded', () => {
         window.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && dialog && !dialog.classList.contains('hidden')) {
                 closeRemoveBookmarkDialog();
+            }
+        });
+    }
+
+    // --- UTM Bookmark Added & Navigation Confirmation Dialog ---
+    let pendingUtmTargetUrl = null;
+
+    function isFullFqdnUrl(url) {
+        if (!url || typeof url !== 'string') return false;
+        const trimmed = url.trim();
+        return /^(?:[a-z+]+:)?\/\//i.test(trimmed);
+    }
+
+    function showUtmBookmarkDialog(cardInfo, isAlreadyBookmarked) {
+        const dialog = document.getElementById('bookmark-utm-dialog');
+        if (!dialog) return;
+
+        const titleEl = document.getElementById('bookmark-utm-dialog-title');
+        const descEl = document.getElementById('bookmark-utm-dialog-desc');
+        const iconContainer = document.getElementById('bookmark-utm-icon-container');
+        const targetTitleEl = document.getElementById('bookmark-utm-target-title');
+        const targetIdEl = document.getElementById('bookmark-utm-target-id');
+        const targetUrlEl = document.getElementById('bookmark-utm-target-url-preview');
+        const openBtnText = document.getElementById('bookmark-utm-open-btn-text');
+        const externalIcon = document.getElementById('bookmark-utm-open-btn-external-icon');
+        const stayBtn = document.getElementById('bookmark-utm-stay-btn');
+
+        const cardTitle = (cardInfo.title || cardInfo.id || '').replace(/<br\s*\/?>/gi, ' ').trim();
+        const cardUrl = cardInfo.url || '#';
+        pendingUtmTargetUrl = cardUrl;
+
+        if (targetTitleEl) targetTitleEl.textContent = cardTitle;
+        if (targetIdEl) targetIdEl.textContent = `ID: ${cardInfo.id}`;
+        if (targetUrlEl) targetUrlEl.textContent = cardUrl;
+
+        const isFqdn = isFullFqdnUrl(cardUrl);
+
+        if (isAlreadyBookmarked) {
+            if (titleEl) titleEl.textContent = 'すでにブックマークに登録されています';
+            if (descEl) descEl.textContent = 'このアイテムはすでにブックマーク登録済みです。リンク先を開きますか？';
+            if (iconContainer) {
+                iconContainer.className = 'w-9 h-9 rounded-full bg-cyan-950/80 border border-cyan-500/40 flex items-center justify-center flex-shrink-0 text-cyan-400 aspect-square';
+            }
+        } else {
+            if (titleEl) titleEl.textContent = 'ブックマークに追加しました';
+            if (descEl) descEl.textContent = 'このアイテムをブックマークに追加しました。今すぐリンク先を開きますか？';
+            if (iconContainer) {
+                iconContainer.className = 'w-9 h-9 rounded-full bg-emerald-950/80 border border-emerald-500/40 flex items-center justify-center flex-shrink-0 text-emerald-400 aspect-square';
+            }
+        }
+
+        if (isFqdn) {
+            if (openBtnText) openBtnText.textContent = '新しいウィンドウで開く';
+            if (externalIcon) externalIcon.classList.remove('hidden');
+        } else {
+            if (openBtnText) openBtnText.textContent = 'ページを開く';
+            if (externalIcon) externalIcon.classList.add('hidden');
+        }
+
+        dialog.classList.remove('hidden');
+        if (stayBtn) {
+            stayBtn.focus();
+        }
+    }
+
+    function closeUtmBookmarkDialog() {
+        const dialog = document.getElementById('bookmark-utm-dialog');
+        if (dialog) {
+            dialog.classList.add('hidden');
+        }
+        pendingUtmTargetUrl = null;
+    }
+
+    function executeUtmTargetNavigation() {
+        const url = pendingUtmTargetUrl;
+        closeUtmBookmarkDialog();
+
+        if (!url || url === '#' || url.trim() === '') {
+            return;
+        }
+
+        if (isFullFqdnUrl(url)) {
+            window.open(url, '_blank', 'noopener,noreferrer');
+        } else {
+            if (url.startsWith('#')) {
+                window.location.hash = url;
+            } else {
+                window.location.href = url;
+            }
+        }
+    }
+
+    function initUtmBookmarkDialog() {
+        const dialog = document.getElementById('bookmark-utm-dialog');
+        const stayBtn = document.getElementById('bookmark-utm-stay-btn');
+        const openBtn = document.getElementById('bookmark-utm-open-btn');
+
+        if (stayBtn) {
+            stayBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                closeUtmBookmarkDialog();
+            });
+        }
+
+        if (openBtn) {
+            openBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                executeUtmTargetNavigation();
+            });
+        }
+
+        if (dialog) {
+            dialog.addEventListener('click', (e) => {
+                if (e.target === dialog) {
+                    closeUtmBookmarkDialog();
+                }
+            });
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && dialog && !dialog.classList.contains('hidden')) {
+                closeUtmBookmarkDialog();
             }
         });
     }
@@ -1044,6 +1179,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize remove bookmark confirmation dialog
     initRemoveBookmarkDialog();
+    initUtmBookmarkDialog();
 
     // Initialize SPA route based on initial URL
     renderRoute();
@@ -1060,12 +1196,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const bookmarks = getStoredBookmarks();
             const alreadyBookmarked = bookmarks.some(b => (b.id && b.id === utmSource) || (b.cardId && b.cardId === utmSource));
             
-            if (!alreadyBookmarked) {
-                // Ensure card info exists before bookmarking to avoid saving empty/null entries
-                const info = getCardInfoByIdOrSlot(utmSource, null);
-                if (info) {
+            const info = getCardInfoByIdOrSlot(utmSource, null);
+            if (info) {
+                if (!alreadyBookmarked) {
                     toggleCardBookmark(utmSource, null);
                 }
+                showUtmBookmarkDialog(info, alreadyBookmarked);
             }
             
             // Clean up URL to prevent re-triggering on reload
