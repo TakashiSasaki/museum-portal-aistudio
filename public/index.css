@@ -134,6 +134,16 @@ body {
 .admin-trigger-button {
     right: calc(6px + env(safe-area-inset-right));
     border-style: none;
+    animation: admin-trigger-fade-out 20s linear 1 forwards;
+}
+
+@keyframes admin-trigger-fade-out {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
 }
 
 .cache-reload-button {
@@ -186,6 +196,12 @@ body {
     to {
         box-shadow: 0 0 18px rgba(103, 232, 249, 0.7);
     }
+}
+
+.admin-trigger-button:focus-visible,
+.admin-trigger-button:active,
+.admin-trigger-button.pressing {
+    opacity: 1 !important;
 }
 
 .admin-trigger-button:focus-visible,

@@ -38,8 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // In-memory active card definitions for bookmarks sync
     const currentCardsData = {};
-    // In-memory definitions of all cards loaded (including archived cards)
-    let allLoadedCards = [...defaultPortalCards];
+    // In-memory definitions of all cards loaded (starts empty until Firestore resolves)
+    let allLoadedCards = [];
 
     // --- Bookmarks Management (Keyed by Card Document ID) ---
     const BOOKMARKS_STORAGE_KEY = 'museum_portal_bookmarks';
@@ -1076,7 +1076,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    renderDefaultPortalCards();
+    // Initial state: Cards remain in blank skeleton state (href="#", title empty, is-loading)
+    // until Firestore data resolves.
+    updateAllCardBookmarkStates();
+    updateArchivesBadge();
+    updateHighlightsBadge();
+
+    // Guard: Prevent navigation on loading or blank cards
+    portalGrid.addEventListener('click', (e) => {
+        const cardLink = e.target.closest('a.cosmic-card');
+        if (!cardLink) return;
+        const href = cardLink.getAttribute('href');
+        if (cardLink.classList.contains('is-loading') || !href || href === '#' || href.trim() === '') {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    });
 
     // Attach click listeners to card bookmark buttons
     const cardBookmarkBtns = portalGrid.querySelectorAll('.card-bookmark-btn');
@@ -1222,24 +1237,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const db = firebase.firestore();
 
-    // Try to get data from cache first for fast loading
-    db.collection("portalCards").get({ source: 'cache' }).then((querySnapshot) => {
-        if (!querySnapshot.empty) {
-            renderPortalCards(querySnapshot);
-        }
-    }).catch((error) => {
-        console.log("Failed to load from cache:", error);
-    });
-
-    // Then try to get fresh data from server
+    // Prioritize latest fresh data from server; cards remain blank skeleton until resolved
     db.collection("portalCards").get({ source: 'server' }).then((querySnapshot) => {
         if (!querySnapshot.empty) {
             renderPortalCards(querySnapshot);
         } else {
             renderDefaultPortalCards();
         }
-    }).catch((error) => {
-        console.log("Failed to load from server:", error);
+    }).catch((serverError) => {
+        console.warn("Failed to load latest from server, checking cache fallback:", serverError);
+        db.collection("portalCards").get({ source: 'cache' }).then((cacheSnapshot) => {
+            if (!cacheSnapshot.empty) {
+                renderPortalCards(cacheSnapshot);
+            } else {
+                renderDefaultPortalCards();
+            }
+        }).catch((cacheError) => {
+            console.warn("Failed to load from cache fallback:", cacheError);
+            renderDefaultPortalCards();
+        });
     }).finally(() => {
         processUtmSourceBookmark();
     });

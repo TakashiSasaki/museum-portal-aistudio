@@ -1,0 +1,60 @@
+/* --- 企業連携プレースホルダ専用スタイル --- */
+
+.back-button {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+.back-button:hover {
+    transform: translateX(-3px);
+    color: #67e8f9; /* cyan-300 */
+    opacity: 1;
+    filter: drop-shadow(0 0 8px rgba(103, 232, 249, 0.5));
+}
+
+/* 真円のアイコン背景（Design Principle 2: Circular Icons） */
+.plasma-sphere {
+    aspect-ratio: 1 / 1;
+    flex-shrink: 0;
+    border-radius: 9999px;
+}
+
+/* コズミックカード効果 */
+.cosmic-panel {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.cosmic-panel:hover {
+    border-color: rgba(103, 232, 249, 0.35);
+}
+
+.pillar-card {
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid rgba(148, 163, 184, 0.12);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pillar-card:hover {
+    border-color: rgba(56, 189, 248, 0.4);
+    background: rgba(15, 23, 42, 0.75);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px -6px rgba(14, 165, 233, 0.2);
+}
+
+/* ランドスケープ最適化 */
+@media (orientation: landscape) and (max-height: 500px) {
+    .landscape-compact-text {
+        font-size: 0.7rem;
+        line-height: 1.1;
+    }
+    .landscape-compact-gap {
+        gap: 0.25rem !important;
+    }
+}

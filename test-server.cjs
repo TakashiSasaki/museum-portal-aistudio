@@ -124,6 +124,15 @@ test('server supports html extension resolution for /admin/view-icons', async ()
     assert.match(res.headers.get('content-type') || '', /text\/html/);
 });
 
+test('server delivers corporate placeholder page at /corporate/ with status 200', async () => {
+    const res = await fetch(`${BASE_URL}/corporate/`);
+    assert.equal(res.status, 200);
+    assert.match(res.headers.get('content-type') || '', /text\/html/);
+    const html = await res.text();
+    assert.ok(html.includes('企業連携'), 'Corporate route HTML should contain expected title');
+    assert.ok(!html.includes('協創'), 'Corporate route HTML should not contain 協創');
+});
+
 test('server serves 404.html for non-existent paths with status 404', async () => {
     const res = await fetch(`${BASE_URL}/this-path-does-not-exist-404-check`);
     assert.equal(res.status, 404);
