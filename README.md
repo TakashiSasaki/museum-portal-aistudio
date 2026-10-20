@@ -10,14 +10,14 @@
 
 ## 開発とプレビュー
 
-本プロジェクトの標準パッケージマネージャーは **Bun** です。
+本プロジェクトの標準パッケージマネージャーは **Node/npm** です。
 
 ```bash
 # 依存関係のインストール
-bun install --frozen-lockfile
+npm ci
 
 # プレビューサーバーの起動 (ポート 3000)
-bun run dev
+npm run dev
 # または
 node server.js
 ```
@@ -30,22 +30,22 @@ node server.js
 
 ```bash
 # 静的整合性テスト（必須ファイル存在確認・JS構文検査・HTML/CSSコントラクト）
-bun run test:static
+npm run test:static
 
 # ImagineDeck フルスクリーンガードテスト
-bun run test:imaginedeck
+npm run test:imaginedeck
 
 # プレビューサーバー・エンドポイントコントラクト検証
-bun run test:server
+npm run test:server
 
 # 全ユニット／コントラクトテストの一括実行
-bun run test
+npm run test
 
 # Playwright によるブラウザスモークテスト（ポート 3000 でサーバーが起動している状態で実行）
-bun run test:browser
+npm run test:browser
 
 # ESLint による構文・スタイル検査
-bun run lint
+npm run lint
 ```
 
 ---

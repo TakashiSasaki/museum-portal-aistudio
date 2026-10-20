@@ -19,7 +19,10 @@ async function runBrowserSmoke() {
     let browser;
     try {
         browser = await chromium.launch({
-            timeout: 15000
+            timeout: 15000,
+            ...(process.env.PLAYWRIGHT_CHROMIUM_CHANNEL
+                ? { channel: process.env.PLAYWRIGHT_CHROMIUM_CHANNEL }
+                : {})
         });
     } catch (err) {
         console.error('Failed to launch Chromium browser:', err);

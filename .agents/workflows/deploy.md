@@ -9,11 +9,11 @@ To deploy the website and firestore rules/indexes:
 1.  Open the terminal.
 2.  Login to Firebase if needed:
     ```bash
-    bun x firebase login
+    npx firebase login
     ```
 3.  Deploy the project to Firebase Hosting:
     ```bash
-    bun x firebase deploy --only hosting
+    npx firebase deploy --only hosting
     ```
 
 ### GitHub Actions deployment
