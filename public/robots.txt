@@ -1,2 +1,5 @@
 User-agent: *
 Disallow: /admin/
+
+Sitemap: https://portal.museum.ehime-u.ac.jp/sitemap.xml
+Sitemap: https://ehimeuniv.ai.studio/sitemap.xml

@@ -1,9 +1,416 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <!-- ========================================== -->
+  <!-- Canonical Domain: portal.museum.ehime-u.ac.jp -->
+  <!-- ========================================== -->
+
+  <!-- Top Page -->
   <url>
     <loc>https://portal.museum.ehime-u.ac.jp/</loc>
-    <lastmod>2024-05-24</lastmod>
-    <changefreq>monthly</changefreq>
+    <xhtml:link rel="alternate" href="https://ehimeuniv.ai.studio/" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>daily</changefreq>
     <priority>1.0</priority>
+  </url>
+
+  <!-- Matsuyama Museum Street -->
+  <url>
+    <loc>https://portal.museum.ehime-u.ac.jp/museum-street/</loc>
+    <xhtml:link rel="alternate" href="https://ehimeuniv.ai.studio/museum-street/" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Imagine Deck -->
+  <url>
+    <loc>https://portal.museum.ehime-u.ac.jp/imaginedeck/</loc>
+    <xhtml:link rel="alternate" href="https://ehimeuniv.ai.studio/imaginedeck/" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Ehime University Research Collaboration / Renkei -->
+  <url>
+    <loc>https://portal.museum.ehime-u.ac.jp/renkei/</loc>
+    <xhtml:link rel="alternate" href="https://ehimeuniv.ai.studio/renkei/" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Corporate Collaboration Information -->
+  <url>
+    <loc>https://portal.museum.ehime-u.ac.jp/corporate/</loc>
+    <xhtml:link rel="alternate" href="https://ehimeuniv.ai.studio/corporate/" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Events Overview & Facilities (Weekly) -->
+  <url>
+    <loc>https://portal.museum.ehime-u.ac.jp/museum-street/events/</loc>
+    <xhtml:link rel="alternate" href="https://ehimeuniv.ai.studio/museum-street/events/" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://portal.museum.ehime-u.ac.jp/museum-street/events/01-events.html</loc>
+    <xhtml:link rel="alternate" href="https://ehimeuniv.ai.studio/museum-street/events/01-events.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://portal.museum.ehime-u.ac.jp/museum-street/events/02-events.html</loc>
+    <xhtml:link rel="alternate" href="https://ehimeuniv.ai.studio/museum-street/events/02-events.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://portal.museum.ehime-u.ac.jp/museum-street/events/03-events.html</loc>
+    <xhtml:link rel="alternate" href="https://ehimeuniv.ai.studio/museum-street/events/03-events.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://portal.museum.ehime-u.ac.jp/museum-street/events/04-events.html</loc>
+    <xhtml:link rel="alternate" href="https://ehimeuniv.ai.studio/museum-street/events/04-events.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://portal.museum.ehime-u.ac.jp/museum-street/events/05-events.html</loc>
+    <xhtml:link rel="alternate" href="https://ehimeuniv.ai.studio/museum-street/events/05-events.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://portal.museum.ehime-u.ac.jp/museum-street/events/06-events.html</loc>
+    <xhtml:link rel="alternate" href="https://ehimeuniv.ai.studio/museum-street/events/06-events.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://portal.museum.ehime-u.ac.jp/museum-street/events/07-events.html</loc>
+    <xhtml:link rel="alternate" href="https://ehimeuniv.ai.studio/museum-street/events/07-events.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://portal.museum.ehime-u.ac.jp/museum-street/events/08-events.html</loc>
+    <xhtml:link rel="alternate" href="https://ehimeuniv.ai.studio/museum-street/events/08-events.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://portal.museum.ehime-u.ac.jp/museum-street/events/09-events.html</loc>
+    <xhtml:link rel="alternate" href="https://ehimeuniv.ai.studio/museum-street/events/09-events.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://portal.museum.ehime-u.ac.jp/museum-street/events/10-events.html</loc>
+    <xhtml:link rel="alternate" href="https://ehimeuniv.ai.studio/museum-street/events/10-events.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Maps Overview & Facilities (Weekly) -->
+  <url>
+    <loc>https://portal.museum.ehime-u.ac.jp/museum-street/mymap/</loc>
+    <xhtml:link rel="alternate" href="https://ehimeuniv.ai.studio/museum-street/mymap/" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://portal.museum.ehime-u.ac.jp/museum-street/mymap/01-mymap.html</loc>
+    <xhtml:link rel="alternate" href="https://ehimeuniv.ai.studio/museum-street/mymap/01-mymap.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://portal.museum.ehime-u.ac.jp/museum-street/mymap/02-mymap.html</loc>
+    <xhtml:link rel="alternate" href="https://ehimeuniv.ai.studio/museum-street/mymap/02-mymap.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://portal.museum.ehime-u.ac.jp/museum-street/mymap/03-mymap.html</loc>
+    <xhtml:link rel="alternate" href="https://ehimeuniv.ai.studio/museum-street/mymap/03-mymap.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://portal.museum.ehime-u.ac.jp/museum-street/mymap/04-mymap.html</loc>
+    <xhtml:link rel="alternate" href="https://ehimeuniv.ai.studio/museum-street/mymap/04-mymap.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://portal.museum.ehime-u.ac.jp/museum-street/mymap/05-mymap.html</loc>
+    <xhtml:link rel="alternate" href="https://ehimeuniv.ai.studio/museum-street/mymap/05-mymap.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://portal.museum.ehime-u.ac.jp/museum-street/mymap/06-mymap.html</loc>
+    <xhtml:link rel="alternate" href="https://ehimeuniv.ai.studio/museum-street/mymap/06-mymap.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://portal.museum.ehime-u.ac.jp/museum-street/mymap/07-mymap.html</loc>
+    <xhtml:link rel="alternate" href="https://ehimeuniv.ai.studio/museum-street/mymap/07-mymap.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://portal.museum.ehime-u.ac.jp/museum-street/mymap/08-mymap.html</loc>
+    <xhtml:link rel="alternate" href="https://ehimeuniv.ai.studio/museum-street/mymap/08-mymap.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://portal.museum.ehime-u.ac.jp/museum-street/mymap/09-mymap.html</loc>
+    <xhtml:link rel="alternate" href="https://ehimeuniv.ai.studio/museum-street/mymap/09-mymap.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://portal.museum.ehime-u.ac.jp/museum-street/mymap/10-mymap.html</loc>
+    <xhtml:link rel="alternate" href="https://ehimeuniv.ai.studio/museum-street/mymap/10-mymap.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- ========================================== -->
+  <!-- Alternative Domain: ehimeuniv.ai.studio    -->
+  <!-- ========================================== -->
+
+  <!-- Top Page -->
+  <url>
+    <loc>https://ehimeuniv.ai.studio/</loc>
+    <xhtml:link rel="alternate" href="https://portal.museum.ehime-u.ac.jp/" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Matsuyama Museum Street -->
+  <url>
+    <loc>https://ehimeuniv.ai.studio/museum-street/</loc>
+    <xhtml:link rel="alternate" href="https://portal.museum.ehime-u.ac.jp/museum-street/" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Imagine Deck -->
+  <url>
+    <loc>https://ehimeuniv.ai.studio/imaginedeck/</loc>
+    <xhtml:link rel="alternate" href="https://portal.museum.ehime-u.ac.jp/imaginedeck/" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Ehime University Research Collaboration / Renkei -->
+  <url>
+    <loc>https://ehimeuniv.ai.studio/renkei/</loc>
+    <xhtml:link rel="alternate" href="https://portal.museum.ehime-u.ac.jp/renkei/" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Corporate Collaboration Information -->
+  <url>
+    <loc>https://ehimeuniv.ai.studio/corporate/</loc>
+    <xhtml:link rel="alternate" href="https://portal.museum.ehime-u.ac.jp/corporate/" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Events Overview & Facilities (Weekly) -->
+  <url>
+    <loc>https://ehimeuniv.ai.studio/museum-street/events/</loc>
+    <xhtml:link rel="alternate" href="https://portal.museum.ehime-u.ac.jp/museum-street/events/" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ehimeuniv.ai.studio/museum-street/events/01-events.html</loc>
+    <xhtml:link rel="alternate" href="https://portal.museum.ehime-u.ac.jp/museum-street/events/01-events.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ehimeuniv.ai.studio/museum-street/events/02-events.html</loc>
+    <xhtml:link rel="alternate" href="https://portal.museum.ehime-u.ac.jp/museum-street/events/02-events.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ehimeuniv.ai.studio/museum-street/events/03-events.html</loc>
+    <xhtml:link rel="alternate" href="https://portal.museum.ehime-u.ac.jp/museum-street/events/03-events.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ehimeuniv.ai.studio/museum-street/events/04-events.html</loc>
+    <xhtml:link rel="alternate" href="https://portal.museum.ehime-u.ac.jp/museum-street/events/04-events.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ehimeuniv.ai.studio/museum-street/events/05-events.html</loc>
+    <xhtml:link rel="alternate" href="https://portal.museum.ehime-u.ac.jp/museum-street/events/05-events.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ehimeuniv.ai.studio/museum-street/events/06-events.html</loc>
+    <xhtml:link rel="alternate" href="https://portal.museum.ehime-u.ac.jp/museum-street/events/06-events.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ehimeuniv.ai.studio/museum-street/events/07-events.html</loc>
+    <xhtml:link rel="alternate" href="https://portal.museum.ehime-u.ac.jp/museum-street/events/07-events.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ehimeuniv.ai.studio/museum-street/events/08-events.html</loc>
+    <xhtml:link rel="alternate" href="https://portal.museum.ehime-u.ac.jp/museum-street/events/08-events.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ehimeuniv.ai.studio/museum-street/events/09-events.html</loc>
+    <xhtml:link rel="alternate" href="https://portal.museum.ehime-u.ac.jp/museum-street/events/09-events.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ehimeuniv.ai.studio/museum-street/events/10-events.html</loc>
+    <xhtml:link rel="alternate" href="https://portal.museum.ehime-u.ac.jp/museum-street/events/10-events.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Maps Overview & Facilities (Weekly) -->
+  <url>
+    <loc>https://ehimeuniv.ai.studio/museum-street/mymap/</loc>
+    <xhtml:link rel="alternate" href="https://portal.museum.ehime-u.ac.jp/museum-street/mymap/" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ehimeuniv.ai.studio/museum-street/mymap/01-mymap.html</loc>
+    <xhtml:link rel="alternate" href="https://portal.museum.ehime-u.ac.jp/museum-street/mymap/01-mymap.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ehimeuniv.ai.studio/museum-street/mymap/02-mymap.html</loc>
+    <xhtml:link rel="alternate" href="https://portal.museum.ehime-u.ac.jp/museum-street/mymap/02-mymap.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ehimeuniv.ai.studio/museum-street/mymap/03-mymap.html</loc>
+    <xhtml:link rel="alternate" href="https://portal.museum.ehime-u.ac.jp/museum-street/mymap/03-mymap.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ehimeuniv.ai.studio/museum-street/mymap/04-mymap.html</loc>
+    <xhtml:link rel="alternate" href="https://portal.museum.ehime-u.ac.jp/museum-street/mymap/04-mymap.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ehimeuniv.ai.studio/museum-street/mymap/05-mymap.html</loc>
+    <xhtml:link rel="alternate" href="https://portal.museum.ehime-u.ac.jp/museum-street/mymap/05-mymap.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ehimeuniv.ai.studio/museum-street/mymap/06-mymap.html</loc>
+    <xhtml:link rel="alternate" href="https://portal.museum.ehime-u.ac.jp/museum-street/mymap/06-mymap.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ehimeuniv.ai.studio/museum-street/mymap/07-mymap.html</loc>
+    <xhtml:link rel="alternate" href="https://portal.museum.ehime-u.ac.jp/museum-street/mymap/07-mymap.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ehimeuniv.ai.studio/museum-street/mymap/08-mymap.html</loc>
+    <xhtml:link rel="alternate" href="https://portal.museum.ehime-u.ac.jp/museum-street/mymap/08-mymap.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ehimeuniv.ai.studio/museum-street/mymap/09-mymap.html</loc>
+    <xhtml:link rel="alternate" href="https://portal.museum.ehime-u.ac.jp/museum-street/mymap/09-mymap.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ehimeuniv.ai.studio/museum-street/mymap/10-mymap.html</loc>
+    <xhtml:link rel="alternate" href="https://portal.museum.ehime-u.ac.jp/museum-street/mymap/10-mymap.html" />
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
   </url>
 </urlset>
